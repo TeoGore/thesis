@@ -1,4 +1,4 @@
-#Todo list:
+# Todo list:
 
 *convert request structure in python dictionary
 *create a flask login app and add it to this repo
