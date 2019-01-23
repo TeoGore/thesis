@@ -38,6 +38,12 @@ print(analyzer.sentiment('google.it/?username=matteo'))
 ----------------------------------------
 Spiegazioni MIE degli algoritmi usati:
 
+TFIDF:
+TF (term frequency) = (#times find a given word in a document) / (#words in that document); è la frequenza del termine
+IDF (inverse document frequency) =log_e(#total_documents, #documents where the word is found); è l'importanza del termine
+In practice: TF calculates term frequency giving same weights to all words, IDF scales TF value so that rare words weigth more than common
+TFIDF is the product (TF*IDF), indicates a weigth that is the importance of the word
+
 SVM:
 Creano iperpiano che divide i dati, parametri:
 GAMMA indica il peso dei dati, se alto indica che i dati vicino al confine hanno peso alto nell' influenzarne la modifica
@@ -59,8 +65,6 @@ PRO:
 
 CONS:
 -trovare il giusto kernel e i giusti parametri, può essere computazionalmente intenso
-
-https://www.youtube.com/watch?v=5BVebXXb2o4
 
 
 

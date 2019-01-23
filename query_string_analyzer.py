@@ -85,13 +85,6 @@ y = good_query_y + bad_query_y      #outputs vector, first for good queries
 
 
 '''
-TF (term frequency) = (#times find a given word in a document) / (#words in that document); è la frequenza del termine
-IDF (inverse document frequency) =log_e(#total_documents, #documents where the word is found); è l'importanza del termine
-In practice: TF calculates term frequency giving same weights to all words, IDF scales TF value so that rare words weigth more than common
-TFIDF is the product (TF*IDF), indicates a weigth that is the importance of the word
-'''
-
-'''
 #n_gram range(A,B) usa tutti gli ngrammi da A a B
 #min_df ignora tutti i vocaboli che hanno frequena nei documenti minore del valore dato
 vectorizer = TfidfVectorizer(min_df=0.0, analyzer="char", sublinear_tf=True, ngram_range=(1,3)) #converting data to vectors
