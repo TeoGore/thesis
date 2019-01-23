@@ -1,0 +1,66 @@
+1) vedere performance di progetti simili (e cosa utilizzano)
+
+2) problemi: bilanciare dataset (le metriche quindi sono falsate--> guardare f1 score per tutte le classi)
+badqueries:
+sqlmap e xsser intercetto le request e le salvo e sono tutte badqueries
+sort -u per togliere duplicati
+
+#da terminale
+wc -l filename //da il numero di righe del file
+(per vedere se mi sto perdendo qualche dat)
+
+
+3) fare Cross Validation per scegliere il modello:
+Train, Validation, Test = (80, 10, 10) or (70, 15, 15)
+
+Il dataset di training viene usato per fare il training dei modelli,
+poi si fa il testing di tutti con il dataset di validazione
+e si controllano le performance per scegliere il modello (classificatore) migliore (model selection).
+Scelto il classificatore (per fare un double check) si usa il dataset di test per trovare le performance.
+
+Posso saltare la validazione solo se so già che modello usare (non faccio model selection) e quindi sono
+già sicuro che il modello che voglio usare sia il migliore (caso quasi impossibile)
+
+Lo stesso tipo di modello ma con parametri differenti è un modello diverso, perciò se ho due modelli uguali
+ma con parametri differenti, vanno entrambi nella validazione per vedere tra tutti quale dei due funziona meglio
+
+
+4) Metriche:
+accuracy: casi corretti rispetto casi sottoposti (va bene con dataset bilanciati)
+con dataset sbilanciati si usano altre metriche (f1_score (per tutte le classi), precision e recall)
+o anche auc (= area under the curve)
+
+---------------------------------------
+TESTING
+from analyzer.nome_analyzer import nome_metodo as analyzer
+print(analyzer.sentiment('google.it/?username=matteo'))
+
+----------------------------------------
+Spiegazioni MIE degli algoritmi usati:
+
+SVM:
+Creano iperpiano che divide i dati, parametri:
+GAMMA indica il peso dei dati, se alto indica che i dati vicino al confine hanno peso alto nell' influenzarne la modifica
+gamma alto puo portare a modifiche significative del confine e (nei casi peggiori) overfitting,
+mettendo gamma basso anche i dati lontani dal confine hanno peso significativo nella sua modifica per l'ottimizzazione, quindi si ha un confine più morbido
+C - deciside per il tradeoff tra: smooth decision boundary (confine di decisione morbido) e classificazione corretta dei punti, se settato male può portare a overfitting
+C alto indica che cerco di non fare errori di classificazione (confine complicato, possibile overfitting),
+C basso cerca di fare una divisione tra i dati piu morbida, permettendo delle misclassification
+I range di valori che viene dato a C va tra 2^-5 a 2^5
+Posso usare le SVM anche per la classificazione con piu classi, basta aggiungere il parametro decision_function_shape nel costruttore, può avere due valori: 'ovo', 'ovr'
+OVR - (one vs rest) costruisce N-1 modelli perche ogni modello è un iperpiano che divide una classe da tutto il resto dei dati
+OVO - (one vs one) costruisce piu modelli ed è piu lento, valuta per ogni dato tutte le possibili classi, è quindi più robusto all'imbalance
+KERNEL TRICK: è un trucco che aggiunge una dimensione ulteriore ai dati per fare in modo che il modello trovato (iperpiano) fitti (separi) meglio i dati
+si fa mettendo il parametro kernel nel costruttore, ha valori: 'linear', 'rbf' (radial basis function), '' (polynomial)(sigmoid)
+
+PRO:
+-si adatta bene a dati N-dimensionali
+-molto buono con dataset piccoli
+
+CONS:
+-trovare il giusto kernel e i giusti parametri, può essere computazionalmente intenso
+
+https://www.youtube.com/watch?v=5BVebXXb2o4
+
+
+

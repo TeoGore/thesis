@@ -1,0 +1,14 @@
+performance:
+
+----------- Query String Analyzer -------------
+Good Datas Size: 1265974
+Bad Datas Size: 44532
+
+
+--> 3-Gram:
+Size all_request_tokens: 21159374
+
+script per fare i pickle: s
+script: s
+
+
