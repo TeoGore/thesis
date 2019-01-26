@@ -52,12 +52,29 @@ mettendo gamma basso anche i dati lontani dal confine hanno peso significativo n
 C - deciside per il tradeoff tra: smooth decision boundary (confine di decisione morbido) e classificazione corretta dei punti, se settato male può portare a overfitting
 C alto indica che cerco di non fare errori di classificazione (confine complicato, possibile overfitting),
 C basso cerca di fare una divisione tra i dati piu morbida, permettendo delle misclassification
-I range di valori che viene dato a C va tra 2^-5 a 2^5
+I range di valori che viene dato in pratica a C va tra 2^-5 a 2^5 (all'effettivo varia tra 0 e +infinito)
 Posso usare le SVM anche per la classificazione con piu classi, basta aggiungere il parametro decision_function_shape nel costruttore, può avere due valori: 'ovo', 'ovr'
 OVR - (one vs rest) costruisce N-1 modelli perche ogni modello è un iperpiano che divide una classe da tutto il resto dei dati
 OVO - (one vs one) costruisce piu modelli ed è piu lento, valuta per ogni dato tutte le possibili classi, è quindi più robusto all'imbalance
 KERNEL TRICK: è un trucco che aggiunge una dimensione ulteriore ai dati per fare in modo che il modello trovato (iperpiano) fitti (separi) meglio i dati
 si fa mettendo il parametro kernel nel costruttore, ha valori: 'linear', 'rbf' (radial basis function), '' (polynomial)(sigmoid)
+
+NuSVM:
+Si differenziano dalle SVM classiche (C) per il parametro di penalizzazione delle misclassification:
+Nu varia tra 0 e 1 (e sarebbe l'equivalente di C), quindi è piu semplice da tarare
+
+KNN:
+assegnano classe in base all'esempio di classi piu vicino, si creano degli spazi di Voronoi, ovvero l'area che circonda un punto do esempio (classe fissacta)
+in cui non ci sono altri punti piu vicini (ovvero tutti i punti vicino al dato, per i quali la distanza dal dato è minoer della distanza da tutti gli altri dati)
+Se si usa la distanza euclidea, gli spazi di Voronoi hanno delle forme poligonali (perche di fatto sono composti dall'intersezione delle linee di confine delle distanze)
+Ogni dato è quindi circondato dal suo spazio di Voronoi, se calcolo gli spazi per tutti i dati ho la tassellazione di Voronoi, ovvero una partizione dello spazio con non-overlapping regions
+dove ogni regione è dominata da un esempio di training (un dato). Quindi la linea di confine tra gli spazi di classi differenti farà da decisione per assegnare la classe ai nuovi dati.
+Il problema è che è un algoritmo con una buona libertà quindi come si adatta bene, soffre anche molto gli outlier ed è soggetto a overfitting
+
+Si può cercare di contrastare il problema facendo in modo che l'algoritmo non cerchi il singolo dato più vicino, me cerchi gli N più vicini e decida in base a quelli.
+
+RandomForest:
+
 
 PRO:
 -si adatta bene a dati N-dimensionali
