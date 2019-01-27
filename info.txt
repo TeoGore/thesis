@@ -63,6 +63,13 @@ NuSVM:
 Si differenziano dalle SVM classiche (C) per il parametro di penalizzazione delle misclassification:
 Nu varia tra 0 e 1 (e sarebbe l'equivalente di C), quindi è piu semplice da tarare
 
+PRO:
+-si adatta bene a dati N-dimensionali
+-molto buono con dataset piccoli
+
+CONS:
+-trovare il giusto kernel e i giusti parametri, può essere computazionalmente intenso
+
 KNN:
 assegnano classe in base all'esempio di classi piu vicino, si creano degli spazi di Voronoi, ovvero l'area che circonda un punto do esempio (classe fissacta)
 in cui non ci sono altri punti piu vicini (ovvero tutti i punti vicino al dato, per i quali la distanza dal dato è minoer della distanza da tutti gli altri dati)
@@ -74,14 +81,39 @@ Il problema è che è un algoritmo con una buona libertà quindi come si adatta 
 Si può cercare di contrastare il problema facendo in modo che l'algoritmo non cerchi il singolo dato più vicino, me cerchi gli N più vicini e decida in base a quelli.
 
 RandomForest:
-
+Viene generata una "foresta" di decision tree, una volta che viene dato un input da predirre, ogni albero dice la sua predizione
+la predizione più comune diventa il valore predetto (come se fosse un classificatore a votazione(majority voting))(nel caso della regressione prende la media degli output)
+Di fatto gli alberi sono dei modelli scorrelati, il loro uso simultaneo fa si che il modello finale (combinazione di tutti i modelli scorrelati) abbia una buona precisione (basso bias e varianza)
+Il problema è che un cambio di dati (o anche dei dati outlier) possono portare ad alberi molto diversi e quindi a overfitting (dell'albero)
+Inoltre il processo di decisione si ferma secondo un criterio, ma piu itera piu è probabile che ha fatto dell'overfitting
+Di fatto le decisioni dell'albero vanno a dividere lo spazio dei dati in regioni separate da linee verticali e orizzontali (creando dei rettangoli)
 
 PRO:
--si adatta bene a dati N-dimensionali
--molto buono con dataset piccoli
+-fa sia classificazione che regressione
+-si adatta quando ci sono parti grandi del dataset mancanti
+-dati i tanti alberi, è robusta all'overfitting
+-va bene per dati multidimensionali
 
 CONS:
--trovare il giusto kernel e i giusti parametri, può essere computazionalmente intenso
+-non è molto precisa nella regressione (meglio usarla nella classificazione), non riesce a predirre oltre il range del dominio dei dati di training, e overfitta se il dataset di training è particolarmente rumoroso
+-c'è poco controllo su quello che il modello fa
+
+PSEUDO-CODICE:
+assumo: N dati di training, ne prendo alcuni (in modo randomico) ma con dei rimpiazzi, saranno i dati usati per far crescere un albero
+se ci sono M feature (input variable), allora viene preso un numero m tale che per ogni nodo (ogni scelta dell'albero) vengano usate solo m variabili (feature) selezionate a random tra le M
+il miglior split sulle m è utilizzato per fare lo split del nodo (decisione nell'albero)
+Il valore di m è tenuto costante mentre facciamo crescere la foresta
+Viene fatto crescere ogni albero fino alla sua massima estensione (senza pruning)
+La predizione viene fatta aggregando i voti degli n alberi
+
+è un classificatore ensemble perchè di fatto assembla dei classificatori che da soli sono deboli ma messi insieme diventano potenti
+(come se metto un gruppo di persone ognuna specializzata in una feature diversa, singolarmente non predirranno bene il complesso, ma insieme diventano fenomenali)
+
+altra terminologia utile:
+Pruning: di fatto significa potare la pianta, ovvero tagliare dei rami (togliere delle decisioni) all'albero in modo da evitare overfitting
+bagging: per fare impovement di stabilità e accuratezza
+boosting: meta-algorithm per ridurre bias e varianza in supervised learning
+
 
 
 
