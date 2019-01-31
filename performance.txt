@@ -11,4 +11,76 @@ Size all_request_tokens: 21159374
 script per fare i pickle: s
 script: s
 
+PRIMA COLTA CHE RUNNA
+----------------  Logistic Regression  ----------------
+Score: 		     98.29
+Accuracy: 	     98.29
+Precision: 	     99.14
+Recall: 	     97.39
+F1-Score: 	     98.26
+AUC: 		     99.85
+
+----------------  MultinomialNB  ----------------
+Score: 		     95.71
+Accuracy: 	     95.71
+Precision: 	     96.96
+Recall: 	     94.27
+F1-Score: 	     95.60
+AUC: 		     98.93
+
+----------------  BernoulliNB  ----------------
+Score: 		     92.47
+Accuracy: 	     92.47
+Precision: 	     97.10
+Recall: 	     87.37
+F1-Score: 	     91.97
+AUC: 		     98.51
+
+----------------  ComplementNB  ----------------
+Score: 		     95.59
+Accuracy: 	     95.59
+Precision: 	     96.95
+Recall: 	     94.02
+F1-Score: 	     95.47
+AUC: 		     98.93
+
+----------------  KNeighborsClassifier  ----------------
+Score: 		     59.38
+Accuracy: 	     59.38
+Precision: 	     55.04
+Recall: 	     97.23
+F1-Score: 	     70.29
+AUC: 		     69.06
+
+----------------  RandomForestClassifier  ----------------
+Score: 		     98.65
+Accuracy: 	     98.65
+Precision: 	     97.90
+Recall: 	     99.41
+F1-Score: 	     98.65
+AUC: 		     99.90
+
+----------------  SVC  ----------------
+Score: 		     49.42
+Accuracy: 	     49.42
+Precision: 	     49.42
+Recall: 	    100.00
+F1-Score: 	     66.15
+AUC: 		     50.00
+
+----------------  NuSVC  ----------------
+Score: 		     92.86
+Accuracy: 	     92.86
+Precision: 	     98.36
+Recall: 	     87.00
+F1-Score: 	     92.33
+AUC: 		     98.94
+
+----------------  BEST CLASSIFIER - TMP_NAME  ----------------
+Score: 		     98.19
+Accuracy: 	     98.19
+Precision: 	     99.18
+Recall: 	     97.20
+F1-Score: 	     98.18
+AUC: 		     99.77
 

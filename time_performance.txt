@@ -1,0 +1,150 @@
+*********	Execution time: 5.217376947402954	*********
+STARTING TRAINING MODELS
+
+*********	Execution time: 7.655046701431274	*********
+FINISHED LOGISTIC REGRESSION
+
+*********	Execution time: 7.7113118171691895	*********
+FINISHED MULTINOMIAL NAIVE BAYES
+
+*********	Execution time: 7.775990009307861	*********
+FINISHED BERNOULLI NAIVE BAYES
+
+*********	Execution time: 7.818317890167236	*********
+FINISHED COMPLEMENT NAIVE BAYES
+
+*********	Execution time: 7.9231858253479	*********
+FINISHED K NEIGHBORS
+
+*********	Execution time: 8.03344988822937	*********
+FINISHED RADIUS NEIGHBORS
+
+*********	Execution time: 231.84227776527405	*********
+FINISHED RANDOM FOREST
+
+*********	Execution time: 68810.92848205566	*********
+FINISHED SVC
+
+
+*********	Execution time: 180429.6088798046	*********
+FINISHED Nu-SVC
+
+
+----------------  Logistic Regression  ----------------
+Score: 		     98.23
+
+Accuracy: 	     98.23
+Precision: 	     99.23
+Recall: 	     97.16
+F1-Score: 	     98.19
+AUC: 		     99.82
+
+*********	Execution time: 180429.64115786552	*********
+FINISHED VALIDATION FOR LOGISTIC REGRESSION
+
+
+----------------  MultinomialNB  ----------------
+Score: 		     95.41
+
+Accuracy: 	     95.41
+Precision: 	     97.08
+Recall: 	     93.52
+F1-Score: 	     95.27
+AUC: 		     98.94
+
+*********	Execution time: 180429.6759569645	*********
+FINISHED VALIDATION FOR MULTINOMIAL NAIVE BAYES
+
+
+----------------  BernoulliNB  ----------------
+Score: 		     91.89
+
+Accuracy: 	     91.89
+Precision: 	     96.84
+Recall: 	     86.41
+F1-Score: 	     91.33
+AUC: 		     98.61
+
+*********	Execution time: 180429.72803497314	*********
+FINISHED VALIDATION FOR BERNOULLI NAIVE BAYES
+
+
+----------------  ComplementNB  ----------------
+Score: 		     95.31
+
+Accuracy: 	     95.31
+Precision: 	     97.07
+Recall: 	     93.32
+F1-Score: 	     95.16
+AUC: 		     98.94
+
+*********	Execution time: 180429.75993013382	*********
+FINISHED VALIDATION FOR COMPLEMENT NAIVE BAYES
+
+
+----------------  KNeighborsClassifier  ----------------
+Score: 		     59.16
+
+Accuracy: 	     59.16
+Precision: 	     54.92
+Recall: 	     96.89
+F1-Score: 	     70.10
+AUC: 		     68.72
+
+*********	Execution time: 180503.19376897812	*********
+FINISHED VALIDATION FOR K NEIGHBORS
+
+*********	Execution time: 180503.1937878132	*********
+FINISHED VALIDATION FOR RADIUS NEIGHBORS - NOT DONE DUE TO ERRORS
+
+
+----------------  RandomForestClassifier  ----------------
+Score: 		     98.55
+
+Accuracy: 	     98.55
+Precision: 	     97.74
+Recall: 	     99.36
+F1-Score: 	     98.55
+AUC: 		     99.87
+
+*********	Execution time: 180506.52990984917	*********
+FINISHED VALIDATION FOR RANDOM FOREST
+
+
+----------------  SVC  ----------------
+Score: 		     49.42
+
+Accuracy: 	     49.42
+Precision: 	     49.42
+Recall: 	    100.00
+F1-Score: 	     66.15
+AUC: 		     50.00
+
+*********	Execution time: 180958.57096290588	*********
+FINISHED VALIDATION FOR SVC
+
+
+----------------  NuSVC  ----------------
+Score: 		     94.35
+
+Accuracy: 	     94.35
+Precision: 	     96.81
+Recall: 	     91.59
+F1-Score: 	     94.13
+AUC: 		     98.98
+
+*********	Execution time: 195574.27475190163	*********
+FINISHED VALIDATION FOR Nu-SVC
+
+
+----------------  BEST CLASSIFIER - TMP_NAME  ----------------
+Score: 		     98.42
+
+Accuracy: 	     98.42
+Precision: 	     99.38
+Recall: 	     97.45
+F1-Score: 	     98.41
+AUC: 		     99.85
+
+*********	Execution time: 195574.31161499023	*********
+FINISHED SCRIPT
