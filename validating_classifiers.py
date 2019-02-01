@@ -11,6 +11,9 @@ from sklearn.svm import SVC, NuSVC
 
 from sklearn import metrics
 
+'''
+Script for training the classifiers and do training-validation-testing, to select the best classifier
+'''
 
 N = 3       # Ngram value
 RANDOM_STATE = 123
@@ -85,6 +88,10 @@ X = vectorizer.fit_transform(all_queries)   # convert inputs to vectors
 print(f'good_queries: \t\t{len(good_queries)}\t\t({len(good_queries)/len(all_queries)*100:5.2f}%)')
 print(f'bad_queries: \t\t{len(bad_queries)}\t\t({len(bad_queries)/len(all_queries)*100:5.2f}%)')
 print(f'total_queries: \t\t{len(all_queries)}')
+
+# Split dataset: train, validation and test (80,10,10)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
+X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=RANDOM_STATE)
 
 time_stamp(start_time)
 print("STARTING TRAINING MODELS")
@@ -184,13 +191,9 @@ time_stamp(start_time)
 print("FINISHED VALIDATION FOR Nu-SVC")
 
 
-# Selected model:
+# Selected model: Logisitc Regression
 # Metrics of the selected model (use Test dataset):
 validate_model(LogisticRegression_Classifier, X_test, y_test, 'BEST CLASSIFIER - LOGISTIC REGRESSION')
-
-# Pickle selected model:
-with open('pickle_tmp/queryStringClassifier.pickle', 'wb') as save_classifier_file:
-    pickle.dump(LogisticRegression_Classifier, save_classifier_file)
 
 time_stamp(start_time)
 print("FINISHED SCRIPT")

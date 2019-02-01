@@ -9,6 +9,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 
 
+'''
+Script for testing classifier parameters
+'''
+
+
 N = 3       # Ngram value
 RANDOM_STATE = 777
 

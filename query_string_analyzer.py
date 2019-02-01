@@ -4,15 +4,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import MultinomialNB, BernoulliNB, ComplementNB
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC, NuSVC
 
 from sklearn import metrics
 
 '''
-Script for training the selected classifier
+Script for training the selected classifier (Logistic Regression), and use
 '''
 
 N = 3       # Ngram value
@@ -100,6 +97,8 @@ validate_model(RandomForest_Classifier, X_validation, y_validation, 'RandomFores
 # Selected model: Logistic Regression
 # Metrics of the selected model (use Test dataset):
 validate_model(LogisticRegression_Classifier, X_test, y_test, 'BEST CLASSIFIER - LOGISTIC REGRESSION')
+
+#TODO create the sentiment analysis function and update this script into a module
 
 
 
