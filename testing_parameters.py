@@ -4,10 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import MultinomialNB, BernoulliNB, ComplementNB
-from sklearn.neighbors import NearestNeighbors, RadiusNeighborsClassifier, KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC, NuSVC
 
 from sklearn import metrics
 
@@ -126,7 +123,28 @@ X = vectorizer.fit_transform(all_queries)   # convert inputs to vectors
 print(f'good_queries: \t\t{len(good_queries)}\t\t({len(good_queries)/len(all_queries)*100:5.2f}%)')
 print(f'bad_queries: \t\t{len(bad_queries)}\t\t({len(bad_queries)/len(all_queries)*100:5.2f}%)')
 print(f'total_queries: \t\t{len(all_queries)}')
+
 print(f'X size: \t\t{X.getnnz()}')
+# TODO capire e poi togliere la stampa print(X)
+print(X)
+
+# Split dataset: train, validation and test (80,10,10)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
+X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=RANDOM_STATE)
+
+print(f'X_TRAIN (shape[0]): \t\t{X_train.shape[0]}')            # todo: problema le shape[0] sono uguali alla cardinalita di Y, le .getnnz() no
+print(f'X_TRAIN (.getnnz()): \t\t{X_train.getnnz()}')
+print(f'Y_TRAIN: \t\t{len(y_train)}')
+print(f'X_VALIDATION (shape[0]): \t\t{X_validation.shape[0]}')
+print(f'X_VALIDATION (.getnnz()): \t\t{X_validation.getnnz()}')
+print(f'Y_VALIDATION: \t\t{len(y_validation)}')
+print(f'X_TEST (shape[0]): \t\t{X_test.shape[0]}')
+print(f'X_TEST (.getnnz()): \t\t{X_test.getnnz()}')
+print(f'Y_TEST: \t\t{len(y_test)}')
+
+# problema: poi come uso i dati nuovi (cioè, dovrebbero essere processati come vengono processati quelli
+# di training, validation e testing, ovvero: decoding, lower, tokenizing with N-grams, tfidf vectorizing)
+# quindi quelle fatte in load_file(), n_gram_tokenizer() e nel tfidf vectorizer.fit_transform
 
 
 # Split dataset: train, validation and test (80,10,10)
@@ -140,12 +158,7 @@ X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, te
 Find best parameters for:
 
 Logistic regression:
-KNeighborsClassifier
-RadiusNeighborsClassifier
 RandomForestClassifier
-SVC_Classifier
-NuSVC_Classifier
-
 '''
 
 # LogisticRegression
@@ -188,26 +201,8 @@ LogisticRegressionModel = LogisticRegression(class_weight={1: 2 *len(good_querie
 '''
 
 '''
-# KNN
-# KNeighborsClassifier_Classifier = KNeighborsClassifier(n_jobs=-1)      usare tutti i core sembra far rallentare
-#todo provare algorithm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’} se metto auto prende l'algo piu adatto in base ai parametri della fit
-KNeighborsClassifier_Classifier = KNeighborsClassifier(n_neighbors=5)        #lento e impreciso
-KNeighborsClassifier_Classifier.fit(X_train, y_train)
-
-RadiusNeighborsClassifier_Classifier = RadiusNeighborsClassifier(radius=1.0)
-RadiusNeighborsClassifier_Classifier.fit(X_train, y_train)              #todo error in validation
-
-# todo Random forest and svc seems to not have fit method(), no warnings generated, but running the code result in infinite loop in that instruction
 # RandomForest
 RandomForestClassifier_classifier = RandomForestClassifier(n_estimators=1000, criterion='gini', random_state=RANDOM_STATE)
-
-# SVM
-#TODO provare altri kernel (# ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’)e cambiare C e gamma
-# usare i parametri gamma=grado per gli altri kernel e degree=grado della polinomiale
-SVC_Classifier = SVC(C=1.0, gamma='auto', cache_size=500, kernel='sigmoid', random_state=RANDOM_STATE) #TODO provare altri kernel (# ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’)e cambiare C e gamma
-SVC_Classifier.fit(X_train, y_train)
-NuSVC_Classifier = NuSVC(nu=0.5, cache_size=500, kernel='sigmoid', random_state=RANDOM_STATE)
-NuSVC_Classifier.fit(X_train, y_train)
 '''
 
 # Metrics of all models (use Validation dataset):
@@ -228,11 +223,7 @@ validate_model(LR_14, X_validation, y_validation, 'Logistic Regression 14')
 
 
 '''
-validate_model(KNeighborsClassifier_Classifier, X_validation, y_validation, 'KNeighborsClassifier')
-#validate_model(RadiusNeighborsClassifier_Classifier, X_validation, y_validation, 'RadiusNeighborsClassifier')
 validate_model(RandomForestClassifier_classifier, X_validation, y_validation, 'RandomForestClassifier')
-validate_model(SVC_Classifier, X_validation, y_validation, 'SVC')
-validate_model(NuSVC_Classifier, X_validation, y_validation, 'NuSVC')
 '''
 
 print_best()

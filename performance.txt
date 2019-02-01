@@ -1,64 +1,110 @@
-performance:
+Output in time for the validating_classifiers.py script:
+-times are in seconds
+-we can see that the best classifiers are: LogisticRegression and RandomForest
+-Also NaiveBayes are pretty good (and fast in classification)
+-SVC are very time consuming, though NuSVC has good results
 
------------ Query String Analyzer -------------
+Conclusions: the Logistic Regression seems the best because is very precise and fast (note that it will be used for every request in the web server!)
+
+dataset size:
+good_queries: 		44532		(50.00%)
+bad_queries: 		44532		(50.00%)
+total_queries: 		89064
+
+Note: the dataset was very unbalanced so we limited the number of good queries in order to balance it:
 Good Datas Size: 1265974
 Bad Datas Size: 44532
+Using 3-Gram we have all_request_tokens size: 21159374
 
+FINISHED PROCESSING DATAS, STARTING TRAINING MODELS
+Execution time: 5.22
 
---> 3-Gram:
-Size all_request_tokens: 21159374
+****************************************************
+FINISHED LOGISTIC REGRESSION
+Execution time: 7.66
 
-script per fare i pickle: s
-script: s
+FINISHED MULTINOMIAL NAIVE BAYES
+Execution time: 7.71
 
-PRIMA COLTA CHE RUNNA
+FINISHED BERNOULLI NAIVE BAYES
+Execution time: 7.78
+
+FINISHED COMPLEMENT NAIVE BAYES
+Execution time: 7.82
+
+FINISHED K NEIGHBORS
+Execution time: 7.92
+
+FINISHED RANDOM FOREST
+Execution time: 231.84
+
+FINISHED SVC
+Execution time: 68810.93
+
+FINISHED Nu-SVC
+Execution time: 180429.61
+
+****************************************************
+FINISHED TRAINING MODELS, STARTING VALIDATION
 ----------------  Logistic Regression  ----------------
-Score: 		     98.29
-Accuracy: 	     98.29
-Precision: 	     99.14
-Recall: 	     97.39
-F1-Score: 	     98.26
-AUC: 		     99.85
+Score: 		     98.23
+Accuracy: 	     98.23
+Precision: 	     99.23
+Recall: 	     97.16
+F1-Score: 	     98.19
+AUC: 		     99.82
+
+Finished at: 180429.64
 
 ----------------  MultinomialNB  ----------------
-Score: 		     95.71
-Accuracy: 	     95.71
-Precision: 	     96.96
-Recall: 	     94.27
-F1-Score: 	     95.60
-AUC: 		     98.93
+Score: 		     95.41
+Accuracy: 	     95.41
+Precision: 	     97.08
+Recall: 	     93.52
+F1-Score: 	     95.27
+AUC: 		     98.94
+
+Finished at: 180429.68
 
 ----------------  BernoulliNB  ----------------
-Score: 		     92.47
-Accuracy: 	     92.47
-Precision: 	     97.10
-Recall: 	     87.37
-F1-Score: 	     91.97
-AUC: 		     98.51
+Score: 		     91.89
+Accuracy: 	     91.89
+Precision: 	     96.84
+Recall: 	     86.41
+F1-Score: 	     91.33
+AUC: 		     98.61
+
+Finished at: 180429.73
 
 ----------------  ComplementNB  ----------------
-Score: 		     95.59
-Accuracy: 	     95.59
-Precision: 	     96.95
-Recall: 	     94.02
-F1-Score: 	     95.47
-AUC: 		     98.93
+Score: 		     95.31
+Accuracy: 	     95.31
+Precision: 	     97.07
+Recall: 	     93.32
+F1-Score: 	     95.16
+AUC: 		     98.94
+
+Finished at: 180429.76
 
 ----------------  KNeighborsClassifier  ----------------
-Score: 		     59.38
-Accuracy: 	     59.38
-Precision: 	     55.04
-Recall: 	     97.23
-F1-Score: 	     70.29
-AUC: 		     69.06
+Score: 		     59.16
+Accuracy: 	     59.16
+Precision: 	     54.92
+Recall: 	     96.89
+F1-Score: 	     70.10
+AUC: 		     68.72
+
+Finished at: 180503.19
 
 ----------------  RandomForestClassifier  ----------------
-Score: 		     98.65
-Accuracy: 	     98.65
-Precision: 	     97.90
-Recall: 	     99.41
-F1-Score: 	     98.65
-AUC: 		     99.90
+Score: 		     98.55
+Accuracy: 	     98.55
+Precision: 	     97.74
+Recall: 	     99.36
+F1-Score: 	     98.55
+AUC: 		     99.87
+
+Finished at: 180506.53
 
 ----------------  SVC  ----------------
 Score: 		     49.42
@@ -68,19 +114,28 @@ Recall: 	    100.00
 F1-Score: 	     66.15
 AUC: 		     50.00
 
-----------------  NuSVC  ----------------
-Score: 		     92.86
-Accuracy: 	     92.86
-Precision: 	     98.36
-Recall: 	     87.00
-F1-Score: 	     92.33
-AUC: 		     98.94
+Finished at: 180958.57
 
-----------------  BEST CLASSIFIER - TMP_NAME  ----------------
-Score: 		     98.19
-Accuracy: 	     98.19
-Precision: 	     99.18
-Recall: 	     97.20
-F1-Score: 	     98.18
-AUC: 		     99.77
+----------------  NuSVC  ----------------
+Score: 		     94.35
+Accuracy: 	     94.35
+Precision: 	     96.81
+Recall: 	     91.59
+F1-Score: 	     94.13
+AUC: 		     98.98
+
+Finished at: 195574.27
+
+FINISHED VALIDATION, TESTING THE BEST MODEL
+****************************************************
+----------------  BEST CLASSIFIER - LOGISTIC REGRESSION  ----------------
+Score: 		     98.42
+Accuracy: 	     98.42
+Precision: 	     99.38
+Recall: 	     97.45
+F1-Score: 	     98.41
+AUC: 		     99.85
+
+Finished script at: 195574.31
+
 
