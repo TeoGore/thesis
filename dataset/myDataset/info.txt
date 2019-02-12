@@ -4,3 +4,6 @@ Queries:
 https://github.com/faizann24/Fwaf-Machine-Learning-driven-Web-Application-Firewall (very unbalanced: 1.29M good, 48K bad)
 
 but we need more bad queries to balance the dataset, so we include:
+
+porto a 600K
+prendiamo 6
