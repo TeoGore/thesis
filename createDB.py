@@ -114,26 +114,70 @@ with open("bad_query_dataset.txt", 'w') as output_file:
 
 #****************************************************
 
-def find_dork_payload_size(attack_data_size):
+
+def file_len(filename):
+    count = 0
+    with open(filename, "r") as file:
+        for count, line in enumerate(file):
+            pass
+    return count + 1
+
+
+def get_dork_payload_filepath(attack):
+    # we use same file for SQLi and X_PATH because the attack can be delivered in very similar scenarios
+    dork_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "SSI":"SSI", "X_PATH":"SQLi", "CI":"CI"}
+    payload_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "SSI":"SSI", "X_PATH":"X_PATH", "CI":"CI"}
+    directory = str(os.getcwd())
+    dork_filepath = os.path.join(directory, f'/data/dorks/{dork_file[attack]}.txt')
+    payload_filepath = os.path.join(directory, f'/data/payloads/{payload_file[attack]}.txt')
+    return  dork_filepath, payload_filepath
+
+
+def optimise(dorks, payloads, datas_size):
+    #function:   (0.3*dorks) * (0.7*payloads) = datas_size
+    value = math.ceil(datas_size*0.3*0.7)
+
+    if (dorks * payloads) < datas_size:
+        print("Cannot find enough datas")
+        exit(-1)
+
+    # try to see if with our dorks we can get enough datas
+    needed_payloads = math.ceil(datas_size / (dorks * 0.3 * 0.7))
+    if payloads >= needed_payloads:
+        return dorks, needed_payloads
+
+    # check with payloads
+    needed_dorks = math.ceil(datas_size / (payloads * 0.3 * 0.7))
+    if dorks >= needed_dorks:
+        return needed_dorks, payloads
+
+    return 0
+
+
+def find_dork_payload_size(attack_data_size, attack):
     #for an attack we combine 30% dorks and 70% payloads
-    return (math.ceil(attack_data_size * 0.3), math.ceil(attack_data_size * 0.7))
+    dork_filepath, payload_filepath = get_dork_payload_filepath(attack)
+    dork_count = file_len(dork_filepath)
+    payload_count = file_len(payload_filepath)
+
+    return optimise(dork_count, payload_count, attack_data_size)
 
 
-def calculate_data_size(data_size, attack):
+def calculate_data_size(attack):
     # percentage division: SQLi 30%, CommandInjection5%, LFI 15%, SSI 10%, XPATH 10%, XSS 30%
     attack_percentage = {"SQLi": 0.3, "XSS":0.3, "LFI":0.15, "SSI": 0.1, "X_PATH":0.1, "CI":0.05}
-    attack_data_size = math.ceil(data_size * attack_percentage[attack])
+    attack_data_size = math.ceil(DATA_SIZE * attack_percentage[attack])
     #TODO remove print
     print(f'{attack} - {attack_data_size}')
-    return find_dork_payload_size(attack_data_size)
+    return find_dork_payload_size(attack_data_size, attack)
 
 
-SQLi_dorks, SQLi_payloads = calculate_data_size(DATA_SIZE, "SQLi")
-XSS_dorks, XSS_payloads = calculate_data_size(DATA_SIZE, "XSS")
-LFI_dorks, LFI_payloads = calculate_data_size(DATA_SIZE, "LFI")
-SSI_dorks, SSI_payloads = calculate_data_size(DATA_SIZE, "SSI")
-X_PATH_dorks, X_PATH_payloads = calculate_data_size(DATA_SIZE, "X_PATH")
-CommandInj_dorks, CommandInj_payloads = calculate_data_size(DATA_SIZE, "CI")
+SQLi_dorks, SQLi_payloads = calculate_data_size("SQLi")
+XSS_dorks, XSS_payloads = calculate_data_size("XSS")
+LFI_dorks, LFI_payloads = calculate_data_size("LFI")
+SSI_dorks, SSI_payloads = calculate_data_size("SSI")
+X_PATH_dorks, X_PATH_payloads = calculate_data_size("X_PATH")
+CommandInj_dorks, CommandInj_payloads = calculate_data_size("CI")
 
 print(f'SQLi: {SQLi_dorks}\t-\t{SQLi_payloads}')
 print(f'XSS: {XSS_dorks}\t-\t{XSS_payloads}')
@@ -142,13 +186,9 @@ print(f'SSI: {SSI_dorks}\t-\t{SSI_payloads}')
 print(f'X_PATH: {X_PATH_dorks}\t-\t{X_PATH_payloads}')
 print(f'CommandInj: {CommandInj_dorks}\t-\t{CommandInj_payloads}')
 
+
 def create_datas(attack, dorks_size, payloads_size):
-    #we use same file for SQLi and X_PATH because the attack can be delivered in very similar scenarios
-    dork_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "SSI":"SSI", "X_PATH":"SQLi", "CI":"CI"}
-    payload_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "SSI":"SSI", "X_PATH":"X_PATH", "CI":"CI"}
-    directory = str(os.getcwd())
-    dork_filepath = os.path.join(directory, f'/data/dorks/{dork_file[attack]}.txt')
-    payload_filepath = os.path.join(directory, f'/data/payloads/{payload_file[attack]}.txt')
+    dork_filepath, payload_filepath = get_dork_payload_filepath(attack)
     result = []
     data_size = dorks_size * payloads_size
     with open(dork_filepath, 'r') as dork_f, open(payload_filepath, 'r') as payload_f:
@@ -159,9 +199,10 @@ def create_datas(attack, dorks_size, payloads_size):
             payload = random.choice(payload_list)
             data = dork + payload
             if data in result:
-                continue #data already created
+                continue        #data already created
             result.append(data)
     return result
+
 
 datas = []
 datas = datas + create_datas("SQLi", SQLi_dorks, SQLi_payloads)
@@ -175,11 +216,10 @@ with open("out.txt", "w") as output_file:
     for data in datas:
         output_file.write(data)
 
-#TODO controllare le risorse che finiscono con "="
 #todo creare file con dork di command injection
+#todo risolvere problema quadratico
+#todo controllare output su file
 
-#with open("data/dorks/lfi_dorks.txt", "r") as LFI_dork, open("data/dorks/sqli_dorks.txt", "r") as SQLi_dork, open("data/dorks/ssi_dorks.txt", "r") as SSI_dork, open("data/dorks/xss_dorks.txt", "r") as XSS_dork:
-#    pass
 
 
 
