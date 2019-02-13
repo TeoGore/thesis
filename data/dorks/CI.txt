@@ -1,0 +1,17 @@
+chat/messagesL.php3?cmd=
+phpMyChat/chat/messagesL.aspx3?cmd=
+visitorupload.php?cmd=
+general.php?cmd=
+head.asp?cmd=
+include.jsp?cmd=
+index.asp?cmd=
+index2.php?cmd=
+index3.php?cmd=
+page.php?cmd=
+path.php?cmd=
+standard.jsp?cmd=
+start.php?cmd=
+view.asp?cmd=
+default.asp?cmd=
+down*.php?cmd=
+enter.php?cmd=

@@ -36,6 +36,69 @@ from analyzer.nome_analyzer import nome_metodo as analyzer
 print(analyzer.sentiment('google.it/?username=matteo'))
 
 ----------------------------------------
+Spiegazione sommaria del machine learning
+supervised: ho dataset con label
+unsupervised: non ho label, cerco se ci sono strutture (aree omogenee)
+reinforcement learning: non si parla di dati, si ha un agente SW che interagisce con un ambiente e ne cambia lo stato avendo un feedback (es: auto che si guida da sola)
+
+vedendola tabellare
+feature = colonna
+datapoint = riga
+
+problemi del supervised:
+regressione: predirre valore reale
+classificazione: predirre classe (variabile categorica)
+
+problemi unsupervised:
+clustering: trovare strutture
+dimensionality reduction: ho un dataset N-dimensionale (ovvero N feature), e riesco ridurre il dataset, per togliere feature inutile o per visualizzare il dataset (se N>3)
+
+Ci sono tanti algo:
+per la regressione: linear regression, regressione non lineare (), random forest, reti neurali
+per la classificazione (principale problema):
+-lineari
+- basati su alberi decisionali
+- non lineari
+
+logistic regression
+naive bayes (utile quando ci sono i testi)
+decision tree e random forest che sono la versione migliorata
+reti neurali
+
+gli alfo che sono allo stato dell'arte è dimmostrato empiricamente che funzionano meglio:
+deep neural network (DB non strutturati in modo rettangolare: img, audio, video, testo)
+basati su random forest come adaptiveBoosting e ExtremeGradientBoosting (migliori per DB rettangolari, variabili categoriche)
+
+c'è un ramo del ML, dato che le DNN funzionano bene con tantissimi dati c'è un ramo dell'ML specializzato sulle reti neurali a piu di due layer (il DL)
+
+DL: ramo del ML che specializzato sulle reti neurali a piu di due layer hidden (ovvero quelli centrali, non input e output (quelli estremi))
+
+Si prende il dataset e si divide in T, CV e Testing
+training: allena il modello
+CV: scelgie il modello
+Testing: da le performace del modello
+
+scelgo tra modelli e per stessi modelli ne uso piu di uno cambiando gli iperparametri
+
+scelgo il modello, prendendo quello con performance migliori in CV e poi vedo le performance reali nel TEST (fornisce la metrica reale delle performance del modello)
+
+
+Dilemma bias-overfitting: VEDERE
+overfitting: ho performance molto alta sul dataset di training, ma ho performance basse su CV e testing
+byas: ho subito performance basse, gia sul training
+
+Prima si risolve il bias, poi si va avanti con gli errori
+Devo costruire un dataset omogeneo!
+
+in questo modo posso fare troubleshooting:
+-se ho prestazioni basso in training--> bias (dati che non vanno bene)
+-alto su training (80/90) pero basso in CV--> potrei aver dato in CV un dataset molto diverso da quello di training, allora ho fatto bene lo split?
+-alto su CV (80/90) pero basso in testing--> potrei aver dato in testing un dataset molto diverso da quello di training, allora ho fatto bene lo split?
+
+per mettere a posto gioco sugli iperparametri
+
+per NLP lo stato dell'arte è: GloveToVec, wordToVec, Embeddings che si sposano bene con le NN
+
 Spiegazioni MIE degli algoritmi usati:
 
 TFIDF:

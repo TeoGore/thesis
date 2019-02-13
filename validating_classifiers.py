@@ -29,9 +29,9 @@ def save_pickle(variable, filename):
     save_file.close()
 
 
-def load_file(name):
+def load_file(filename):
     directory = str(os.getcwd())
-    filepath = os.path.join(directory, name)
+    filepath = os.path.join(directory, filename)
     result = []
     with open(filepath, 'r') as f:
         for line in f:
