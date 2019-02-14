@@ -15,27 +15,16 @@ https://howdofree.altervista.org/cc-db-dork-list.html
 http://anonganesh.blogspot.com/2014/06/xss-dorks-list.html
 http://howtohackstuff.blogspot.com/2017/03/xss-dorks-list.html
 
-1)Aumentare payload x_path e SSI data
-file sizes: DORK - PAYLOAD
-SQLi file sizes: 7369 - 577
-XSS file sizes: 146 - 4214
-LFI file sizes: 1521 - 11080
-SSI file sizes: 14 - 80
-X_PATH file sizes: 7369 - 16
-CI file sizes: 107 - 8850
+1)Aumentare pse possibile payload x_path e SSI data
 
 2)script che campiona e vediamo quanto ci mette a fare training (se >20 minuti dimezzo dataset)
-iniziare con 300K dati e mettendo dataset bad vecchio, quindi nello script principale prendere dalle good query len(badquery) scelte random
+iniziare con 300K dati poi aggiustare
 
 3)presentazione tesi (save in PDF)
 '''
 
 
-DATA_SIZE = 600000
-
-def pre_processing():
-    #TODO put the main method in here
-    pass
+DATA_SIZE = 300000
 
 
 def file_len(filename):
@@ -142,38 +131,42 @@ def create_datas(attack, dorks_size, payloads_size):
     return result
 
 
-print("*************** ATTACK PARTITIONS ***************")
-SQLi_dorks, SQLi_payloads = calculate_data_size("SQLi")
-XSS_dorks, XSS_payloads = calculate_data_size("XSS")
-LFI_dorks, LFI_payloads = calculate_data_size("LFI")
-X_PATH_dorks, X_PATH_payloads = calculate_data_size("X_PATH")
-CommandInj_dorks, CommandInj_payloads = calculate_data_size("CI")
+def pre_processing():
+    print("*************** ATTACK PARTITIONS ***************")
+    SQLi_dorks, SQLi_payloads = calculate_data_size("SQLi")
+    XSS_dorks, XSS_payloads = calculate_data_size("XSS")
+    LFI_dorks, LFI_payloads = calculate_data_size("LFI")
+    X_PATH_dorks, X_PATH_payloads = calculate_data_size("X_PATH")
+    CommandInj_dorks, CommandInj_payloads = calculate_data_size("CI")
 
-print("\n*************** DORKS - PAYLOADS SIZE***************")
-print(f'SQLi: {SQLi_dorks}\t-\t{SQLi_payloads}')
-print(f'XSS: {XSS_dorks}\t-\t{XSS_payloads}')
-print(f'LFI: {LFI_dorks}\t-\t{LFI_payloads}')
-print(f'X_PATH: {X_PATH_dorks}\t-\t{X_PATH_payloads}')
-print(f'CommandInj: {CommandInj_dorks}\t-\t{CommandInj_payloads}')
+    print("\n*************** DORKS - PAYLOADS SIZE***************")
+    print(f'SQLi: {SQLi_dorks}\t-\t{SQLi_payloads}')
+    print(f'XSS: {XSS_dorks}\t-\t{XSS_payloads}')
+    print(f'LFI: {LFI_dorks}\t-\t{LFI_payloads}')
+    print(f'X_PATH: {X_PATH_dorks}\t-\t{X_PATH_payloads}')
+    print(f'CommandInj: {CommandInj_dorks}\t-\t{CommandInj_payloads}')
 
-#create datas
-datas = []
-datas = datas + create_datas("SQLi", SQLi_dorks, SQLi_payloads)
-datas = datas + create_datas("XSS", XSS_dorks, XSS_payloads)
-datas = datas + create_datas("LFI", LFI_dorks, LFI_payloads)
-datas = datas + create_datas("X_PATH", X_PATH_dorks, X_PATH_payloads)
-datas = datas + create_datas("CI", CommandInj_dorks, CommandInj_payloads)
+    # create datas
+    datas = []
+    datas = datas + create_datas("SQLi", SQLi_dorks, SQLi_payloads)
+    datas = datas + create_datas("XSS", XSS_dorks, XSS_payloads)
+    datas = datas + create_datas("LFI", LFI_dorks, LFI_payloads)
+    datas = datas + create_datas("X_PATH", X_PATH_dorks, X_PATH_payloads)
+    datas = datas + create_datas("CI", CommandInj_dorks, CommandInj_payloads)
 
-random.shuffle(datas)
-datas = datas[:DATA_SIZE]
+    random.shuffle(datas)
+    datas = datas[:DATA_SIZE]
 
-print(f"*************** WRITING {DATA_SIZE} QUERYSTRING***************")
-i = 0
-with open("out.txt", "w") as output_file:
-    for data in datas:
-        output_file.write(data)
-        print(f"[{i}] - {data[:-1]}")
-        i +=1
+    print(f"*************** WRITING {DATA_SIZE} QUERYSTRING***************")
+    i = 0
+    with open("out.txt", "w") as output_file:
+        for data in datas:
+            output_file.write(data)
+            print(f"[{i}] - {data[:-1]}")
+            i += 1
 
-print(f"\nQUERY GENERATED: {len(datas)} ---> CHECK out.txt ")
-#then, if out.txt is well-formed, copy and paste in: "bad.txt" in /dataset/myDataset/
+    print(f"\nQUERY GENERATED: {len(datas)} ---> CHECK out.txt ")
+    # then, copy and paste in: "bad.txt" in /dataset/myDataset/
+
+if __name__=='__main__':
+    pre_processing()
