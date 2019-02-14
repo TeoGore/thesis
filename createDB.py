@@ -3,62 +3,39 @@ import os, random, math
 '''
 script used to create the bad_query dataset with google dorks
 the bad queries will be created concatenating vulnerable path found with dorks with actual attack strings
-
-https://github.com/danielmiessler/SecLists/tree/master/Fuzzing
-
 Vulnerabilities are taken from OWASP top 10 2017:
-1 - Injections
-
-dorks from: https://gbhackers.com/latest-google-sql-dorks/
+https://github.com/danielmiessler/SecLists/tree/master/Fuzzing
+https://gbhackers.com/latest-google-sql-dorks/
 https://hackingvision.com/2017/04/14/google-dorks-for-sql-injection/
 https://www.techweed.net/wp-content/uploads/2018/04/Fresh-Google-Dorks-List-2018-For-SQLi-Techweed.pdf
 https://github.com/Hood3dRob1n/BinGoo/tree/master/dorks
-
-
-payloads from:
 https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/SQL%20injection
 https://github.com/swisskyrepo/PayloadsAllTheThings
 https://github.com/foospidy/payloads/tree/master/owasp/fuzzing_code_database
 https://github.com/danielmiessler/SecLists/tree/master/Fuzzing
-
 https://github.com/foospidy/payloads
-
-3 - Sensitive Data Exposure
 https://howdofree.altervista.org/cc-db-dork-list.html
-
-4 - XXE (XML External Entities)
-
-7 - XSS (Cross-Site Scripting)
-dorks:
 http://anonganesh.blogspot.com/2014/06/xss-dorks-list.html
 http://howtohackstuff.blogspot.com/2017/03/xss-dorks-list.html
-'''
-
-
-'''
-
-0)per x_path si puo usare il dataset di sqli
-per command injection si usano i path con parametro cmd= o command=
-xxe per ora lasciato perdere
 
 1)per sampling calcolo ogni volta il numero di file per dork e payload
 dork*payload e vedere #data
-
-2)prende in input n dataset, e da n prende n campioni distinti da dork e payload
+prende in input n dataset, e da n prende n campioni distinti da dork e payload
 70 payload
 30 dork
 
-3a)script che campiona e vediamo quanto ci mette a fare training (se >20 min dimezzo dataset)
-iniziare con 300K e mettere dataset bad vecchio
+2)script che campiona e vediamo quanto ci mette a fare training (se >20 minuti dimezzo dataset)
+iniziare con 300K dati e mettendo dataset bad vecchio, quindi nello script principale prendere dalle good query len(badquery) scelte random
 
 
-4)presentazione (libre office)
-
+3)presentazione tesi (save in PDF)
 '''
+
 
 DATA_SIZE = 300000
 
 def pre_processing():
+    #TODO put the main method in here
     pass
 
 
@@ -71,6 +48,7 @@ def load_file(name):
             result.append(line)
     return list(set(result))    # delete duplicate datas
 
+#todo remove method
 def load_payload_file(name):
     directory = str(os.getcwd())
     filepath = os.path.join(directory, name)
@@ -79,11 +57,6 @@ def load_payload_file(name):
         for line in f:
             result.append(line[:-1])
     return list(set(result))    # delete duplicate datas
-
-
-#todo controllare: % spazi ” “ e altri caratteri strani nei file di
-#sqli_dork = load_dork_file("sqli_dorks.txt")
-#sqli_payload = load_payload_file("sqli_payloads.txt")
 
 
 
@@ -125,6 +98,7 @@ def file_len(filename):
 
 def get_dork_payload_filepath(attack):
     # we use same file for SQLi and X_PATH because the attack can be delivered in very similar scenarios
+    # for now we don't use xxe since is more used in body not in querystring
     dork_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "SSI":"SSI", "X_PATH":"SQLi", "CI":"CI"}
     payload_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "SSI":"SSI", "X_PATH":"X_PATH", "CI":"CI"}
     directory = str(os.getcwd())
@@ -179,6 +153,7 @@ SSI_dorks, SSI_payloads = calculate_data_size("SSI")
 X_PATH_dorks, X_PATH_payloads = calculate_data_size("X_PATH")
 CommandInj_dorks, CommandInj_payloads = calculate_data_size("CI")
 
+#todo remove prints
 print(f'SQLi: {SQLi_dorks}\t-\t{SQLi_payloads}')
 print(f'XSS: {XSS_dorks}\t-\t{XSS_payloads}')
 print(f'LFI: {LFI_dorks}\t-\t{LFI_payloads}')
@@ -194,12 +169,12 @@ def create_datas(attack, dorks_size, payloads_size):
     with open(dork_filepath, 'r') as dork_f, open(payload_filepath, 'r') as payload_f:
         dork_list = dork_f.readlines()
         payload_list = payload_f.readlines()
-        while len(result)< data_size:
+        while len(result) < data_size:
             dork = random.choice(dork_list)
             payload = random.choice(payload_list)
-            data = dork + payload
+            data = dork[:-1] + payload # remove \n from dork
             if data in result:
-                continue        #data already created
+                continue        # data already created
             result.append(data)
     return result
 
@@ -215,11 +190,8 @@ datas = datas + create_datas("CI", CommandInj_dorks, CommandInj_payloads)
 with open("out.txt", "w") as output_file:
     for data in datas:
         output_file.write(data)
+#then, if out.txt is well-formed, copy and paste in: "bad.txt" in /dataset/myDataset/
 
-#todo creare file con dork di command injection
+
 #todo risolvere problema quadratico
-#todo controllare output su file
-
-
-
-
+#todo check file output (if its formatted well)
