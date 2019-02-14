@@ -19,12 +19,12 @@ http://howtohackstuff.blogspot.com/2017/03/xss-dorks-list.html
 
 2)script che campiona e vediamo quanto ci mette a fare training (se >20 minuti dimezzo dataset)
 iniziare con 300K dati poi aggiustare
-
+--> siamo a 750K dati, oltre non avrei abbastanza xss
 3)presentazione tesi (save in PDF)
 '''
 
 
-DATA_SIZE = 300000
+DATA_SIZE = 750000
 
 
 def file_len(filename):
