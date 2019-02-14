@@ -15,7 +15,14 @@ https://howdofree.altervista.org/cc-db-dork-list.html
 http://anonganesh.blogspot.com/2014/06/xss-dorks-list.html
 http://howtohackstuff.blogspot.com/2017/03/xss-dorks-list.html
 
-1)Aumentare payload x_path
+1)Aumentare payload x_path e SSI data
+file sizes: DORK - PAYLOAD
+SQLi file sizes: 7369 - 577
+XSS file sizes: 146 - 4214
+LFI file sizes: 1521 - 11080
+SSI file sizes: 14 - 80
+X_PATH file sizes: 7369 - 16
+CI file sizes: 107 - 8850
 
 2)script che campiona e vediamo quanto ci mette a fare training (se >20 minuti dimezzo dataset)
 iniziare con 300K dati e mettendo dataset bad vecchio, quindi nello script principale prendere dalle good query len(badquery) scelte random
@@ -24,22 +31,11 @@ iniziare con 300K dati e mettendo dataset bad vecchio, quindi nello script princ
 '''
 
 
-DATA_SIZE = 100 #todo onli for testing, then use 300K
-#DATA_SIZE = 300000
+DATA_SIZE = 100000
 
 def pre_processing():
     #TODO put the main method in here
     pass
-
-
-def load_file(name):
-    directory = str(os.getcwd())
-    filepath = os.path.join(directory, name)
-    result = []
-    with open(filepath, 'r') as f:
-        for line in f:
-            result.append(line)
-    return list(set(result))    # delete duplicate datas
 
 
 def file_len(filename):
@@ -73,17 +69,8 @@ def optimise(dorks, payloads, datas_size):
     PAYLOADS:   payloads = sqrt((7/3)*data_size)
 
     then we can ceil to get integers value
-    '''
 
-    if (dorks * payloads) < datas_size:
-        print("Cannot find enough datas")
-        exit(-1)
-
-    needed_dorks = math.ceil(math.sqrt((3 / 7) * datas_size))
-    needed_payloads = math.ceil(math.sqrt((7 / 3) * datas_size))
-
-    if needed_dorks > dorks or needed_payloads > payloads:
-        #dont have enough dorks or payloads, so get reault by iterative method
+    ALSO WE COULD USE AN ITERATIVE METHOD
         needed_dorks = 1
         needed_payloads = 1
         size = needed_dorks * needed_payloads
@@ -91,6 +78,26 @@ def optimise(dorks, payloads, datas_size):
             needed_dorks += 1
             needed_payloads = math.ceil((7 / 3) * needed_dorks)
             size = needed_dorks * needed_payloads
+    '''
+
+    if (dorks * payloads) < datas_size:
+        print(f"Cannot find enough datas - DATA REQUIRED {datas_size}")
+        exit(-1)
+
+    needed_dorks = math.ceil(math.sqrt((3 / 7) * datas_size))
+    needed_payloads = math.ceil(math.sqrt((7 / 3) * datas_size))
+
+    if needed_dorks > dorks or needed_payloads > payloads:
+        #dont have enough dorks or payloads, so get reault by iterative method
+        min_val = min(dorks,payloads)
+        if min_val == dorks:
+            #low dorks
+            needed_dorks = dorks
+            needed_payloads = math.ceil(datas_size/needed_dorks)
+        else:
+            #low payloads
+            needed_payloads = payloads
+            needed_dorks = math.ceil(datas_size/needed_payloads)
 
     return needed_dorks, needed_payloads
 
@@ -105,7 +112,7 @@ def find_dork_payload_size(attack_data_size, attack):
 
 def calculate_data_size(attack):
     # percentage division: SQLi 30%, CommandInjection5%, LFI 15%, SSI 10%, XPATH 10%, XSS 30%
-    attack_percentage = {"SQLi": 0.3, "XSS":0.3, "LFI":0.15, "SSI": 0.1, "X_PATH":0.01, "CI":0.14}
+    attack_percentage = {"SQLi": 0.3, "XSS":0.3, "LFI":0.15, "SSI": 0.01, "X_PATH":0.1, "CI":0.14}
     attack_data_size = math.ceil(DATA_SIZE * attack_percentage[attack])
     print(f'{attack} - {attack_data_size}')
     return find_dork_payload_size(attack_data_size, attack)
@@ -119,6 +126,7 @@ def create_datas(attack, dorks_size, payloads_size):
         dork_list = dork_f.readlines()
         payload_list = payload_f.readlines()
         while len(result) < data_size:
+            #todo check for infinite loop
             dork = random.choice(dork_list)
             payload = random.choice(payload_list)
             data = dork[:-1] + payload # remove \n from dork
@@ -156,9 +164,13 @@ datas = datas + create_datas("CI", CommandInj_dorks, CommandInj_payloads)
 random.shuffle(datas)
 datas = datas[:DATA_SIZE]
 
+print(f"*************** WRITING {DATA_SIZE} QUERYSTRING***************")
+i = 0
 with open("out.txt", "w") as output_file:
     for data in datas:
         output_file.write(data)
+        print(f"[{i}] - {data[:-1]}")
+        i +=1
 
 print(f"\nQUERY GENERATED: {len(datas)} ---> CHECK out.txt ")
 #then, if out.txt is well-formed, copy and paste in: "bad.txt" in /dataset/myDataset/
