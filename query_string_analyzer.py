@@ -13,6 +13,7 @@ Script for training the selected classifier (Logistic Regression), and use
 N = 3       # Ngram value
 RANDOM_STATE = 123
 
+
 def save_pickle(variable, filename):
     save_file = open(filename, 'wb')
     pickle.dump(variable, save_file)
@@ -57,7 +58,8 @@ def validate_model(model, x_validation, y_validation, model_name):
 
 
 def time_stamp(start):
-    print(f'Execution time: {start_time-time.time()}')
+    print(f'Execution time: {start-time.time()}')
+
 
 start_time = time.time()
 
