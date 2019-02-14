@@ -1,4 +1,4 @@
-import os, pickle, urllib.parse
+import os, pickle, urllib.parse, time
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
@@ -58,10 +58,15 @@ def validate_model(model, x_validation, y_validation, model_name):
     print(f'AUC: \t\t{auc*100:10.2f}')
 
 
+def time_stamp(start):
+    print(f'Execution time: {start_time-time.time()}')
+
+start_time = time.time()
+
 # Creating inputs (X)
-good_queries = load_file('dataset/kdn_url_queries/goodqueries.txt')
-bad_queries = load_file('dataset/kdn_url_queries/badqueries.txt')
-good_queries = good_queries[:44532]     # TODO temporary to balance dataset
+good_queries = load_file('dataset/myDataset/good.txt')
+bad_queries = load_file('dataset/myDataset/bad.txt')
+good_queries = good_queries[:len(bad_queries)]     #balance dataset
 all_queries = good_queries + bad_queries   # list of all queries, first the good one
 
 # Create supervised output (y), 1 for bad queries, 0 for good queries
@@ -77,26 +82,51 @@ X = vectorizer.fit_transform(all_queries)   # convert inputs to vectors
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
 X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=RANDOM_STATE)
 
+#todo remove timestamp
+time_stamp(start_time)
+print("INITIALISED DATAS, STARTING TRAINING")
+
 # -------------------------------------------------MODEL SELECTION--------------------------------------
 # LogisticRegression
-LogisticRegression_Classifier = LogisticRegression(solver='lbfgs', random_state=RANDOM_STATE) # put solver to silence the warning
+LogisticRegression_Classifier = LogisticRegression(solver='lbfgs', random_state=RANDOM_STATE, max_iter=10000) # put solver to silence the warning
 LogisticRegression_Classifier.fit(X_train, y_train)   # train the model
 save_pickle(LogisticRegression_Classifier, 'pickle_tmp/LogisticRegression_Classifier.pickle')
+
+#todo remove timestamp
+time_stamp(start_time)
+print("TRAINED Logistic Regression")
 
 # RandomForest
 RandomForest_Classifier = RandomForestClassifier(n_estimators=100, criterion='gini', random_state=RANDOM_STATE)
 RandomForest_Classifier.fit(X_train, y_train)
 save_pickle(RandomForest_Classifier, 'pickle_tmp/RandomForest_Classifier.pickle')
 
+#todo remove timestamp
+time_stamp(start_time)
+print("TRAINED Random Forest")
+
 
 # Metrics of all models (use Validation dataset):
 validate_model(LogisticRegression_Classifier, X_validation, y_validation, 'Logistic Regression')
+#todo remove timestamp
+time_stamp(start_time)
+print("VALIDATE Logistic Regression")
+
 validate_model(RandomForest_Classifier, X_validation, y_validation, 'RandomForestClassifier')
+
+#todo remove timestamp
+time_stamp(start_time)
+print("VALIDATE Random Forest")
 
 
 # Selected model: Logistic Regression
 # Metrics of the selected model (use Test dataset):
 validate_model(LogisticRegression_Classifier, X_test, y_test, 'BEST CLASSIFIER - LOGISTIC REGRESSION')
+
+#todo remove timestamp
+time_stamp(start_time)
+print("FINISHED TESTING - END SCRIPT")
+
 
 #TODO create the sentiment analysis function and update this script into a module
 
