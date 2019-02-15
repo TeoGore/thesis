@@ -24,7 +24,7 @@ iniziare con 300K dati poi aggiustare
 '''
 
 
-DATA_SIZE = 750000
+DATA_SIZE = 1200000
 
 
 def file_len(filename):
@@ -38,8 +38,10 @@ def file_len(filename):
 def get_dork_payload_filepath(attack):
     # we use same file for SQLi and X_PATH because the attack can be delivered in very similar scenarios
     # for now we don't use xxe since is more used in body not in querystring
-    dork_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "X_PATH":"SQLi", "CI":"CI"}
-    payload_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "X_PATH":"X_PATH", "CI":"CI"}
+
+    #removed XSS and SSI because low data, so we put all the data we can create areafy in teh output file
+    dork_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "X_PATH":"SQLi", "SSI":"SSI", "CI":"CI"}
+    payload_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "X_PATH":"X_PATH", "SSI":"SSI", "CI":"CI"}
     directory = str(os.getcwd())
     dork_filepath = os.path.join(directory, f'data/dorks/{dork_file[attack]}.txt')
     payload_filepath = os.path.join(directory, f'data/payloads/{payload_file[attack]}.txt')
@@ -101,7 +103,7 @@ def find_dork_payload_size(attack_data_size, attack):
 
 def calculate_data_size(attack):
     # percentage division: SQLi 30%, CommandInjection5%, LFI 15%, SSI 10%, XPATH 10%, XSS 30%
-    attack_percentage = {"SQLi": 0.3, "XSS":0.3, "LFI":0.15, "X_PATH":0.1, "CI":0.15}
+    attack_percentage = {"SQLi": 0.5, "LFI":0.25, "CI":0.25}
     attack_data_size = math.ceil(DATA_SIZE * attack_percentage[attack])
     print(f'{attack} - {attack_data_size}')
     return find_dork_payload_size(attack_data_size, attack)
@@ -117,7 +119,6 @@ def create_datas(attack, dorks_size, payloads_size):
 
         i=0
         while len(result) < data_size:
-            #todo check for infinite loop
             dork = random.choice(dork_list)
             payload = random.choice(payload_list)
             data = dork[:-1] + payload # remove \n from dork
@@ -132,26 +133,31 @@ def create_datas(attack, dorks_size, payloads_size):
 
 
 def pre_processing():
+    #XSS, SSI and X_PATH removed for too low datas (we take all the possible data and added to the result)
+
     print("*************** ATTACK PARTITIONS ***************")
     SQLi_dorks, SQLi_payloads = calculate_data_size("SQLi")
-    XSS_dorks, XSS_payloads = calculate_data_size("XSS")
+    #XSS_dorks, XSS_payloads = calculate_data_size("XSS")
     LFI_dorks, LFI_payloads = calculate_data_size("LFI")
-    X_PATH_dorks, X_PATH_payloads = calculate_data_size("X_PATH")
+    #SSI_dorks, SSI_payloads = calculate_data_size("SSI")
+    #X_PATH_dorks, X_PATH_payloads = calculate_data_size("X_PATH")
     CommandInj_dorks, CommandInj_payloads = calculate_data_size("CI")
 
     print("\n*************** DORKS - PAYLOADS SIZE***************")
     print(f'SQLi: {SQLi_dorks}\t-\t{SQLi_payloads}')
-    print(f'XSS: {XSS_dorks}\t-\t{XSS_payloads}')
+    #print(f'XSS: {XSS_dorks}\t-\t{XSS_payloads}')
     print(f'LFI: {LFI_dorks}\t-\t{LFI_payloads}')
-    print(f'X_PATH: {X_PATH_dorks}\t-\t{X_PATH_payloads}')
+    #print(f'SSI: {SSI_dorks}\t-\t{SSI_payloads}')
+    #print(f'X_PATH: {X_PATH_dorks}\t-\t{X_PATH_payloads}')
     print(f'CommandInj: {CommandInj_dorks}\t-\t{CommandInj_payloads}')
 
     # create datas
     datas = []
     datas = datas + create_datas("SQLi", SQLi_dorks, SQLi_payloads)
-    datas = datas + create_datas("XSS", XSS_dorks, XSS_payloads)
+    #datas = datas + create_datas("XSS", XSS_dorks, XSS_payloads)
     datas = datas + create_datas("LFI", LFI_dorks, LFI_payloads)
-    datas = datas + create_datas("X_PATH", X_PATH_dorks, X_PATH_payloads)
+    #datas = datas + create_datas("SSI", SSI_dorks, SSI_payloads)
+    #datas = datas + create_datas("X_PATH", X_PATH_dorks, X_PATH_payloads)
     datas = datas + create_datas("CI", CommandInj_dorks, CommandInj_payloads)
 
     random.shuffle(datas)
