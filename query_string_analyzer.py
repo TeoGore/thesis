@@ -1,33 +1,20 @@
-import os, pickle, urllib.parse
-
+import pickle, urllib.parse
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn import metrics
+
 
 '''
-Script for training the selected classifier (Logistic Regression)
+Sentiment analysis module for query string, (for training the model -->query_string_analyzer_PICKLE.py)
 '''
 
 N = 3       # Ngram value
 RANDOM_STATE = 123
 
 
-def save_pickle(variable, filename):
-    save_file = open(filename, 'wb')
-    pickle.dump(variable, save_file)
-    save_file.close()
-
-
-def load_file(filename):
-    directory = str(os.getcwd())
-    filepath = os.path.join(directory, filename)
-    result = []
-    with open(filepath, 'r') as f:
-        for line in f:
-            data = str(urllib.parse.unquote(line))  # converting encoded url to simple string
-            result.append(data)
-    return list(set(result))    # delete duplicate datas
+def load_pickle(filename):
+    load_file = open(filename, 'rb')
+    classifier = pickle.load(load_file)
+    load_file.close()
+    return classifier
 
 
 def n_gram_tokenizer(query_string):
@@ -40,56 +27,30 @@ def n_gram_tokenizer(query_string):
     return n_grams
 
 
-def validate_model(model, x_validation, y_validation, model_name):
-    print(f'\n\n----------------  {model_name}  ----------------')
-
-    y_predicted = model.predict(x_validation)
-    fpr, tpr, _ = metrics.roc_curve(y_validation, (model.predict_proba(x_validation)[:, 1]))
-    auc = metrics.auc(fpr, tpr)
-
-    # Metrics evaluation
-    print(f'Score: \t\t{model.score(x_validation, y_validation) * 100:10.2f}\n')
-    print(f'Accuracy: \t{model.score(x_validation, y_validation)*100:10.2f}')
-    print(f'Precision: \t{metrics.precision_score(y_validation, y_predicted)*100:10.2f}')
-    print(f'Recall: \t{metrics.recall_score(y_validation, y_predicted)*100:10.2f}')
-    print(f'F1-Score: \t{metrics.f1_score(y_validation, y_predicted)*100:10.2f}')
-    print(f'AUC: \t\t{auc*100:10.2f}')
+LogisticRegressionClassifier = load_pickle("classifiers/LogisticRegression_Classifier.pickle")
+vectorizer = TfidfVectorizer(tokenizer=n_gram_tokenizer)
+# X = vectorizer.fit_transform(all_queries)   # convert inputs to vectors
 
 
-# Creating inputs (X)
-good_queries = load_file('dataset/myDataset/good.txt')
-bad_queries = load_file('dataset/myDataset/bad.txt')
-good_queries = good_queries[:len(bad_queries)]     # balance dataset
-all_queries = good_queries + bad_queries   # list of all queries, first the good one
-
-print(len(good_queries))
-print(len(bad_queries))
-
-# Create supervised output (y), 1 for bad queries, 0 for good queries
-good_query_y = [0 for i in range(0, len(good_queries))]
-bad_query_y = [1 for i in range(0, len(bad_queries))]
-y = good_query_y + bad_query_y      # outputs vector, first for good queries
+def pre_process(query):
+    datas = []
+    data = str(urllib.parse.unquote(query))     # converting encoded url to simple string
+    datas.append(data)
+    X = vectorizer.fit_transform(datas)
+    return X
 
 
-vectorizer = TfidfVectorizer(tokenizer=n_gram_tokenizer)    # term frequency-inverse document frequency;
-X = vectorizer.fit_transform(all_queries)   # convert inputs to vectors
+def sentiment(query):
+    data = pre_process(query)
+    return LogisticRegressionClassifier.predict(data)
+#todo ritornare tupla (sentiment, accuracy)
 
-# Split dataset: train, validation and test (80,10,10)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
-X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=RANDOM_STATE)
+'''
+TESTING
 
-# -------------------------------------------------MODEL SELECTION--------------------------------------
-# LogisticRegression
-LogisticRegression_Classifier = LogisticRegression(solver='lbfgs', random_state=RANDOM_STATE, max_iter=10000) # put solver to silence the warning
-LogisticRegression_Classifier.fit(X_train, y_train)   # train the model
-save_pickle(LogisticRegression_Classifier, 'pickle_tmp/LogisticRegression_Classifier.pickle')
+from query_string_analyzer import sentiment as s
 
-# Metrics of all models (use Validation dataset):
-validate_model(LogisticRegression_Classifier, X_validation, y_validation, 'Logistic Regression')
-
-# Selected model: Logistic Regression
-# Metrics of the selected model (use Test dataset):
-validate_model(LogisticRegression_Classifier, X_test, y_test, 'BEST CLASSIFIER - LOGISTIC REGRESSION')
-
-
-# TODO create the sentiment analysis function and update this script into a module
+print(s("/google.com/"))
+print(s("/google.com/../../../***/"))
+print(s("/google.com/"))
+'''
