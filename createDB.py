@@ -117,18 +117,14 @@ def create_datas(attack, dorks_size, payloads_size):
         dork_list = dork_f.readlines()
         payload_list = payload_f.readlines()
 
-        i=0
+    while len(result) < data_size:
+        print(f'DATA CREATED: [{len(result)}]')
         while len(result) < data_size:
             dork = random.choice(dork_list)
             payload = random.choice(payload_list)
             data = dork[:-1] + payload # remove \n from dork
-
-            print(f'[{i}] - generated')
-            if data in result:
-                continue        # data already created
             result.append(data)
-            print(f'[{i}] - ADDED')
-            i += 1
+        result = list(set(result))  # delete possible duplicate
     return result
 
 
@@ -173,6 +169,31 @@ def pre_processing():
 
     print(f"\nQUERY GENERATED: {len(datas)} ---> CHECK out.txt ")
     # then, copy and paste in: "bad.txt" in /dataset/myDataset/
+
+
+def create_good_dataset():
+
+    result = []
+    data_size = file_len("dataset/myDataset/bad.txt")
+
+    with open("data/all_dorks.txt", 'r') as dork_f, open("data/good_querystring.txt", 'r') as payload_f:
+        dork_list = dork_f.readlines()
+        payload_list = payload_f.readlines()
+
+    while len(result) < data_size:
+        print(f'DATA CREATED: [{len(result)}]')
+        while len(result) < data_size:
+            dork = random.choice(dork_list)
+            payload = random.choice(payload_list)
+            data = dork[:-1] + payload  # remove \n from dork
+            result.append(data)
+        result = list(set(result))  #delete possible duplicate
+
+    with open("out.txt", "w") as out:
+        for r in result:
+            out.write(r)
+    # then, copy and paste in: "good.txt" in /dataset/myDataset/
+
 
 if __name__=='__main__':
     pre_processing()
