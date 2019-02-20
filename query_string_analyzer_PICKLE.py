@@ -58,30 +58,51 @@ def validate_model(model, x_validation, y_validation, model_name):
 
 
 # Creating inputs (X)
-good_queries = load_file('dataset/myDataset/good.txt')
-bad_queries = load_file('dataset/myDataset/bad.txt')
-good_queries = good_queries[:len(bad_queries)]     # balance dataset
+#good_queries = load_file('dataset/myDataset/good.txt')
+#bad_queries = load_file('dataset/myDataset/bad.txt')
+
+
+good_queries = load_file('resultTMP/good.txt')
+bad_queries = load_file('resultTMP/bad.txt')
+
+good_len = len(good_queries)
+bad_len = len(bad_queries)
+
+min_val = min(good_len, bad_len)
+if min_val == good_len:
+    bad_queries = bad_queries[:good_len]    #less good queries, so balance dataset
+else:
+    good_queries = good_queries[:bad_len]
+
 all_queries = good_queries + bad_queries   # list of all queries, first the good one
 
-print(len(good_queries))
-print(len(bad_queries))
+print(f"GOOD QUERIES: {len(good_queries)}")
+print(f"BAD QUERIES: {len(bad_queries)}")
 
 # Create supervised output (y), 1 for bad queries, 0 for good queries
 good_query_y = [0 for i in range(0, len(good_queries))]
 bad_query_y = [1 for i in range(0, len(bad_queries))]
 y = good_query_y + bad_query_y      # outputs vector, first for good queries
 
-
-vectorizer = TfidfVectorizer(tokenizer=n_gram_tokenizer)    # term frequency-inverse document frequency;
-X = vectorizer.fit_transform(all_queries)   # convert inputs to vectors
-
 # Split dataset: train, validation and test (80,10,10)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
+X_train, X_test, y_train, y_test = train_test_split(all_queries, y, test_size=0.2, random_state=RANDOM_STATE)
 X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, test_size=0.5, random_state=RANDOM_STATE)
+
+
+vectorizer = TfidfVectorizer(tokenizer=n_gram_tokenizer)    # term frequency-inverse document frequency
+vectorizer_fitted = vectorizer.fit(X_train)
+save_pickle(vectorizer_fitted, "classifiers/TFIDF_Vectorizer")
+
+
+X_train = vectorizer.transform(X_train)   # convert inputs to vectors
+X_validation = vectorizer.transform(X_validation)
+X_test = vectorizer.transform(X_test)
+
+
 
 # -----------------------------MODEL SELECTION-----------------------------
 # LogisticRegression
-LogisticRegression_Classifier = LogisticRegression(solver='lbfgs', random_state=RANDOM_STATE, max_iter=10000) # put solver to silence the warning
+LogisticRegression_Classifier = LogisticRegression(solver='lbfgs', random_state=RANDOM_STATE, max_iter=200) # put solver to silence the warning
 LogisticRegression_Classifier.fit(X_train, y_train)   # train the model
 save_pickle(LogisticRegression_Classifier, 'pickle_tmp/LogisticRegression_Classifier.pickle')
 

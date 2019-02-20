@@ -1,31 +1,96 @@
-import os, random, math
+import math, random
 
-'''
-script used to create the bad_query dataset with google dorks
-the bad queries will be created concatenating vulnerable path found with dorks with actual attack strings
-Vulnerabilities are taken from OWASP top 10 2017:
-https://gbhackers.com/latest-google-sql-dorks/
-https://hackingvision.com/2017/04/14/google-dorks-for-sql-injection/
-https://www.techweed.net/wp-content/uploads/2018/04/Fresh-Google-Dorks-List-2018-For-SQLi-Techweed.pdf
-https://github.com/danielmiessler/SecLists/tree/master/Fuzzing
-https://github.com/Hood3dRob1n/BinGoo/tree/master/dorks
-https://github.com/swisskyrepo/PayloadsAllTheThings
-https://github.com/foospidy/payloads
-https://howdofree.altervista.org/cc-db-dork-list.html
-http://anonganesh.blogspot.com/2014/06/xss-dorks-list.html
-http://howtohackstuff.blogspot.com/2017/03/xss-dorks-list.html
-
-1)Aumentare pse possibile payload x_path e SSI data
-
-2)script che campiona e vediamo quanto ci mette a fare training (se >20 minuti dimezzo dataset)
-iniziare con 300K dati poi aggiustare
---> siamo a 750K dati, oltre non avrei abbastanza xss
-3)presentazione tesi (save in PDF)
-'''
+DATA_SIZE = 1000000
 
 
-DATA_SIZE = 1200000
+def url_has_questionmark(url):
+    if url.find('?') != -1:
+        return True
+    return False
 
+
+def strip_payload(url):
+    index = url.rfind("=")
+    return url[:index+1]
+
+
+def strip_payloads(filepath):
+    results = []
+    urls = []
+    with open(filepath, "r") as input_file:
+        urls = input_file.readlines()
+
+    for url in urls:
+        if url_has_questionmark(url):
+            results.append(strip_payload(url))
+        else:
+            results.append(url)
+    return results
+
+
+def dork_urls():
+    CI = strip_payloads("data/dorks/CI.txt")
+    LFI = strip_payloads("data/dorks/LFI.txt")
+    SQLi = strip_payloads("data/dorks/SQLi.txt")
+    SSI = strip_payloads("data/dorks/SSI.txt")
+    XSS = strip_payloads("data/dorks/XSS.txt")
+    results = CI + LFI + SQLi + SSI + XSS
+    return results
+
+def dork_urls_dict():
+    results = {}
+    attacks = ["CI", "LFI", "SQLi", "SSI", "XSS"]
+    for attack in attacks:
+        attack_results = []
+        filepath = f'data/dorks/{attack}.txt'
+        with open(filepath, "r") as input_file:
+            attack_results = input_file.readlines()
+        results[attack] = attack_results
+    return results
+
+def get_payload(url):
+    index = url.find("?")
+    return url[index+1:]
+
+def get_good_payloads(filepath):
+    results = []
+    urls = []
+    with open(filepath, "r") as input_file:
+        urls = input_file.readlines()
+
+    for url in urls:
+        if url_has_questionmark(url):
+            results.append(get_payload(url))
+    return results
+
+def get_dork_payloads():
+    results = {}
+    attacks = ["CI", "LFI", "SQLi", "SSI", "X_PATH", "XSS"]
+    for attack in attacks:
+        attack_results = []
+        filepath = f'data/payloads/{attack}.txt'
+        with open(filepath, "r") as input_file:
+            attack_results = input_file.readlines()
+        results[attack] = attack_results
+    return results
+
+
+def create_good_queries(datasize, urls, payloads):
+    results = []
+
+    while len(results) < datasize:
+        print(f'GOOD DATA CREATED: [{len(results)}]')
+        while len(results) < datasize:
+            url = random.choice(urls)
+            if url_has_questionmark(url):
+                payload = random.choice(payloads)
+            else:
+                payload = ''
+            data = url[:-1] + payload  # remove \n from dork
+            results.append(data)
+        results = list(set(results))  #delete possible duplicate
+    random.shuffle(results)
+    return results
 
 def file_len(filename):
     count = 0
@@ -35,20 +100,7 @@ def file_len(filename):
     return count + 1
 
 
-def get_dork_payload_filepath(attack):
-    # we use same file for SQLi and X_PATH because the attack can be delivered in very similar scenarios
-    # for now we don't use xxe since is more used in body not in querystring
-
-    #removed XSS and SSI because low data, so we put all the data we can create areafy in teh output file
-    dork_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "X_PATH":"SQLi", "SSI":"SSI", "CI":"CI"}
-    payload_file = {"SQLi":"SQLi", "XSS":"XSS", "LFI":"LFI", "X_PATH":"X_PATH", "SSI":"SSI", "CI":"CI"}
-    directory = str(os.getcwd())
-    dork_filepath = os.path.join(directory, f'data/dorks/{dork_file[attack]}.txt')
-    payload_filepath = os.path.join(directory, f'data/payloads/{payload_file[attack]}.txt')
-    return dork_filepath, payload_filepath
-
-
-def optimise(dorks, payloads, datas_size):
+def calculate_dork_payload_size(attack_size, attack):
     '''
     for an attack we want to combine 30% dorks and 70% payloads, so we have the non-linear system:
     A)  dorks*payloads = datas_size
@@ -70,130 +122,136 @@ def optimise(dorks, payloads, datas_size):
             needed_payloads = math.ceil((7 / 3) * needed_dorks)
             size = needed_dorks * needed_payloads
     '''
+    if attack == "X_PATH":
+        dork_attack = "SQLi"
+    else:
+        dork_attack = attack
 
-    if (dorks * payloads) < datas_size:
-        print(f"Cannot find enough datas - DATA REQUIRED {datas_size}")
-        exit(-1)
+    dork_size = file_len(f"data/dorks/{dork_attack}.txt")
+    payload_size = file_len(f"data/payloads/{attack}.txt")
 
-    needed_dorks = math.ceil(math.sqrt((3 / 7) * datas_size))
-    needed_payloads = math.ceil(math.sqrt((7 / 3) * datas_size))
+    if dork_size*payload_size < attack_size:
+        print(f"Not enough {attack} data! NEEDED: {attack_size}\nADDED ALL POSSIBLE!")
+        return dork_size, payload_size
 
-    if needed_dorks > dorks or needed_payloads > payloads:
+    needed_dorks = math.ceil(math.sqrt((3 / 7) * attack_size))
+    needed_payloads = math.ceil(math.sqrt((7 / 3) * attack_size))
+
+    if needed_dorks > dork_size or needed_payloads > payload_size:
         #dont have enough dorks or payloads, so get reault by iterative method
-        min_val = min(dorks,payloads)
-        if min_val == dorks:
+        min_val = min(dork_size, payload_size)
+        if min_val == dork_size:
             #low dorks
-            needed_dorks = dorks
-            needed_payloads = math.ceil(datas_size/needed_dorks)
+            needed_dorks = dork_size
+            needed_payloads = math.ceil(attack_size/needed_dorks)
         else:
             #low payloads
-            needed_payloads = payloads
-            needed_dorks = math.ceil(datas_size/needed_payloads)
+            needed_payloads = payload_size
+            needed_dorks = math.ceil(attack_size/needed_payloads)
 
     return needed_dorks, needed_payloads
 
 
-def find_dork_payload_size(attack_data_size, attack):
-    dork_filepath, payload_filepath = get_dork_payload_filepath(attack)
-    dork_count = file_len(dork_filepath)
-    payload_count = file_len(payload_filepath)
-
-    return optimise(dork_count, payload_count, attack_data_size)
-
-
-def calculate_data_size(attack):
+#todo test eliminating an attack in training but not testing
+def find_attacks_size(datasize, dorks, payloads):
     # percentage division: SQLi 30%, CommandInjection5%, LFI 15%, SSI 10%, XPATH 10%, XSS 30%
-    attack_percentage = {"SQLi": 0.5, "LFI":0.25, "CI":0.25}
-    attack_data_size = math.ceil(DATA_SIZE * attack_percentage[attack])
-    print(f'{attack} - {attack_data_size}')
-    return find_dork_payload_size(attack_data_size, attack)
+    attack_percentage = {"CI":0.05, "LFI":0.15, "SQLi": 0.3, "SSI":0.1, "X_PATH":0.1, "XSS":0.3}
+    #attack_percentage = {"CI": 0.05, "LFI": 0.15, "SQLi": 0.3, "SSI": 0.1, "X_PATH": 0.1, "XSS": 0.3}
+    results = {}
+    for attack_key in attack_percentage.keys():
+        attack_size = math.ceil(attack_percentage[attack_key]*datasize)
+        dork_size, payload_size = calculate_dork_payload_size(attack_size, attack_key)
+        results[attack_key] = (dork_size, payload_size)
+    return results
 
+def get_datas(needed_datas):
+    results = {}# dizionario: attacco:(lista_dork, lista_payload)
 
-def create_datas(attack, dorks_size, payloads_size):
-    dork_filepath, payload_filepath = get_dork_payload_filepath(attack)
-    result = []
-    data_size = dorks_size * payloads_size
-    with open(dork_filepath, 'r') as dork_f, open(payload_filepath, 'r') as payload_f:
-        dork_list = dork_f.readlines()
-        payload_list = payload_f.readlines()
+    for attack_key in needed_datas.keys():
+        if attack_key == "X_PATH":
+            dork_file = "SQLi"
+        else:
+            dork_file = attack_key
+        dork_size, payload_size = needed_datas[attack_key]
+        dorks = []
+        payloads = []
+        with open(f"data/dorks/{dork_file}.txt", "r") as dork_file:
+            dorks_lines = dork_file.readlines()
+            while len(dorks)< dork_size:
+                dorks.append(random.choice(dorks_lines))
+        with open(f"data/payloads/{attack_key}.txt", "r") as payload_file:
+            payloads_lines = payload_file.readlines()
+            while len(payloads) < payload_size:
+                payloads.append(random.choice(payloads_lines))
+        results[attack_key] = (dorks, payloads)
+    return results
 
-    while len(result) < data_size:
-        print(f'DATA CREATED: [{len(result)}]')
-        while len(result) < data_size:
-            dork = random.choice(dork_list)
-            payload = random.choice(payload_list)
-            data = dork[:-1] + payload # remove \n from dork
-            result.append(data)
-        result = list(set(result))  # delete possible duplicate
-    return result
-
-
-def pre_processing():
-    #XSS, SSI and X_PATH removed for too low datas (we take all the possible data and added to the result)
-
-    print("*************** ATTACK PARTITIONS ***************")
-    SQLi_dorks, SQLi_payloads = calculate_data_size("SQLi")
-    #XSS_dorks, XSS_payloads = calculate_data_size("XSS")
-    LFI_dorks, LFI_payloads = calculate_data_size("LFI")
-    #SSI_dorks, SSI_payloads = calculate_data_size("SSI")
-    #X_PATH_dorks, X_PATH_payloads = calculate_data_size("X_PATH")
-    CommandInj_dorks, CommandInj_payloads = calculate_data_size("CI")
-
-    print("\n*************** DORKS - PAYLOADS SIZE***************")
-    print(f'SQLi: {SQLi_dorks}\t-\t{SQLi_payloads}')
-    #print(f'XSS: {XSS_dorks}\t-\t{XSS_payloads}')
-    print(f'LFI: {LFI_dorks}\t-\t{LFI_payloads}')
-    #print(f'SSI: {SSI_dorks}\t-\t{SSI_payloads}')
-    #print(f'X_PATH: {X_PATH_dorks}\t-\t{X_PATH_payloads}')
-    print(f'CommandInj: {CommandInj_dorks}\t-\t{CommandInj_payloads}')
-
-    # create datas
-    datas = []
-    datas = datas + create_datas("SQLi", SQLi_dorks, SQLi_payloads)
-    #datas = datas + create_datas("XSS", XSS_dorks, XSS_payloads)
-    datas = datas + create_datas("LFI", LFI_dorks, LFI_payloads)
-    #datas = datas + create_datas("SSI", SSI_dorks, SSI_payloads)
-    #datas = datas + create_datas("X_PATH", X_PATH_dorks, X_PATH_payloads)
-    datas = datas + create_datas("CI", CommandInj_dorks, CommandInj_payloads)
-
-    random.shuffle(datas)
-    datas = datas[:DATA_SIZE]
-
-    print(f"*************** WRITING {DATA_SIZE} QUERYSTRING***************")
-    i = 0
-    with open("out.txt", "w") as output_file:
-        for data in datas:
-            output_file.write(data)
-            print(f"[{i}] - {data[:-1]}")
-            i += 1
-
-    print(f"\nQUERY GENERATED: {len(datas)} ---> CHECK out.txt ")
-    # then, copy and paste in: "bad.txt" in /dataset/myDataset/
-
-
-def create_good_dataset():
-
-    result = []
-    data_size = file_len("dataset/myDataset/bad.txt")
-
-    with open("data/all_dorks.txt", 'r') as dork_f, open("data/good_querystring.txt", 'r') as payload_f:
-        dork_list = dork_f.readlines()
-        payload_list = payload_f.readlines()
-
-    while len(result) < data_size:
-        print(f'DATA CREATED: [{len(result)}]')
-        while len(result) < data_size:
-            dork = random.choice(dork_list)
-            payload = random.choice(payload_list)
+def create_SQLi(size, datas):
+    results = datas
+    with open("data/dorks/SQLi.txt", "r") as dorks, open("data/payloads/SQLi.txt", "r") as payloads:
+        dorks = dorks.readlines()
+        payloads = payloads.readlines()
+    while len(results) < size:
+        print(f'MORE SQLi DATA CREATED: [{len(results)}]')
+        while len(results) < size:
+            dork = random.choice(dorks)
+            payload = random.choice(payloads)
             data = dork[:-1] + payload  # remove \n from dork
-            result.append(data)
-        result = list(set(result))  #delete possible duplicate
+            results.append(data)
+        results = list(set(results))  #delete possible duplicate
+    return results
 
-    with open("out.txt", "w") as out:
-        for r in result:
-            out.write(r)
-    # then, copy and paste in: "good.txt" in /dataset/myDataset/
+def create_bad_datas(needed_datas):
+    results = []
+    datas = get_datas(needed_datas)
+    for attack_key in datas.keys():
+        attack_dorks, attack_payloads = datas[attack_key]
+        for dork in attack_dorks:
+            for payload in attack_payloads:
+                results.append(dork[:-1] + payload)
+
+
+    if len(results)< DATA_SIZE:
+        results = create_SQLi(DATA_SIZE, results)
+
+    random.shuffle(results)
+    results = results[:DATA_SIZE]
+    return results
+
+def create_bad_queries(datasize, dorks, payloads):
+    needed_datas = find_attacks_size(datasize, dorks, payloads)
+    return create_bad_datas(needed_datas)
+
+
+def create_dataset(datasize):
+    good_urls_base = strip_payloads("dataset/kdn_url_queries/goodqueries.txt")
+    dork_urls_base = dork_urls()
+    url_base = good_urls_base + dork_urls_base
+
+    good_payloads = get_good_payloads("dataset/kdn_url_queries/goodqueries.txt")
+    dork_urls_dictionary = dork_urls_dict()
+    dork_payloads = get_dork_payloads()
+
+    good_queries = create_good_queries(datasize, url_base, good_payloads)
+    bad_queries = create_bad_queries(datasize, dork_urls_dictionary, dork_payloads)
+
+    print(f'\nGOOD CREATED: {len(good_queries)}')
+    print(f'BAD CREATED: {len(bad_queries)}')
+
+    with open("resultTMP/good.txt", "w") as output_file:
+        for data in good_queries:
+            if data.endswith("\n"):
+                output_file.write(data)
+            else:
+                index = data.find("\n")
+                output_file.write(data[:index] + "\n")
+                output_file.write(data[index+1:])
+
+    with open("resultTMP/bad.txt", "w") as output_file:
+        for data in bad_queries:
+            output_file.write(data)
+
 
 
 if __name__=='__main__':
-    pre_processing()
+    create_dataset(DATA_SIZE)

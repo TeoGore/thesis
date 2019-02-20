@@ -171,44 +171,34 @@ RandomForestClassifier
 # usare classe liblinear per dataset piccoli, per quelli grandi: sag e saga
 # penalita: newton, sag e lbfgs fanno solo L2, liblinear e saga anche L1.
 
-LR_1 = LogisticRegression(C=1.0, tol=0.001, solver='lbfgs', random_state=RANDOM_STATE)
+C_values = [0.01, 0.02, 0.1, 0.2, 1, 2, 10, 20]
+
+LR_1 = LogisticRegression(C=1.0, solver='lbfgs', random_state=RANDOM_STATE)
 LR_1.fit(X_train, y_train)
-LR_2 = LogisticRegression(C=1.0, tol=0.001, solver='liblinear', random_state=RANDOM_STATE)
+LR_2 = LogisticRegression(C=1.0, solver='liblinear', random_state=RANDOM_STATE)
 LR_2.fit(X_train, y_train)
-LR_3 = LogisticRegression(C=1.0, tol=0.001, solver='sag', random_state=RANDOM_STATE)
+LR_3 = LogisticRegression(C=1.0, solver='sag', random_state=RANDOM_STATE)
 LR_3.fit(X_train, y_train)
-LR_4 = LogisticRegression(C=1.0, tol=0.001, solver='saga', random_state=RANDOM_STATE)
+LR_4 = LogisticRegression(C=1.0, solver='saga', random_state=RANDOM_STATE)
 LR_4.fit(X_train, y_train)
-LR_5 = LogisticRegression(C=1.0, tol=0.001, solver='newton-cg', random_state=RANDOM_STATE)
+LR_5 = LogisticRegression(C=1.0, solver='newton-cg', random_state=RANDOM_STATE)
 LR_5.fit(X_train, y_train)
-LR_6 = LogisticRegression(C=1.0, tol=0.001, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_6 = LogisticRegression(C=1.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
 LR_6.fit(X_train, y_train)
-LR_7 = LogisticRegression(C=1.0, tol=0.001, solver='saga', penalty='l1', random_state=RANDOM_STATE)
+LR_7 = LogisticRegression(C=1.0, solver='saga', penalty='l1', random_state=RANDOM_STATE)
 LR_7.fit(X_train, y_train)
-LR_8 = LogisticRegression(C=2.0, tol=0.00001, solver='lbfgs', random_state=RANDOM_STATE)
-LR_8.fit(X_train, y_train)
-LR_9 = LogisticRegression(C=2.0, tol=0.00001, solver='liblinear', random_state=RANDOM_STATE)
-LR_9.fit(X_train, y_train)
-LR_10 = LogisticRegression(C=2.0, tol=0.00001, solver='sag', random_state=RANDOM_STATE)
-LR_10.fit(X_train, y_train)
-LR_11 = LogisticRegression(C=2.0, tol=0.00001, solver='saga', random_state=RANDOM_STATE)
-LR_11.fit(X_train, y_train)
-LR_12 = LogisticRegression(C=2.0, tol=0.00001, solver='newton-cg', random_state=RANDOM_STATE)
-LR_12.fit(X_train, y_train)
-LR_13 = LogisticRegression(C=2.0, tol=0.00001, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_13.fit(X_train, y_train)
-LR_14 = LogisticRegression(C=2.0, tol=0.00001, solver='saga', penalty='l1', random_state=RANDOM_STATE)
-LR_14.fit(X_train, y_train)
+
+# todo
+#grafico con C = [0.01, 0.02, 0.1, 0.2, 1, 2, 10, 20] e performance cross-validazione, per solver di default
+#rifare con i solver che supportano penalità l1
+#Metodo migliore ma lento: grid search = tutti i parametri in una griglia e cerco combinazione migliore
+
 
 '''
 #pesi delle classi {nomeclasse:peso; nomeclasse2:peso2, ...}
 LogisticRegressionModel = LogisticRegression(class_weight={1: 2 *len(good_queries)/len(bad_queries), 0: 1.0}) # class_weight='balanced')
 '''
 
-'''
-# RandomForest
-RandomForestClassifier_classifier = RandomForestClassifier(n_estimators=1000, criterion='gini', random_state=RANDOM_STATE)
-'''
 
 # Metrics of all models (use Validation dataset):
 validate_model(LR_1, X_validation, y_validation, 'Logistic Regression 1')
@@ -218,17 +208,6 @@ validate_model(LR_4, X_validation, y_validation, 'Logistic Regression 4')
 validate_model(LR_5, X_validation, y_validation, 'Logistic Regression 5')
 validate_model(LR_6, X_validation, y_validation, 'Logistic Regression 6')
 validate_model(LR_7, X_validation, y_validation, 'Logistic Regression 7')
-validate_model(LR_8, X_validation, y_validation, 'Logistic Regression 8')
-validate_model(LR_9, X_validation, y_validation, 'Logistic Regression 9')
-validate_model(LR_10, X_validation, y_validation, 'Logistic Regression 10')
-validate_model(LR_11, X_validation, y_validation, 'Logistic Regression 11')
-validate_model(LR_12, X_validation, y_validation, 'Logistic Regression 12')
-validate_model(LR_13, X_validation, y_validation, 'Logistic Regression 13')
-validate_model(LR_14, X_validation, y_validation, 'Logistic Regression 14')
 
-
-'''
-validate_model(RandomForestClassifier_classifier, X_validation, y_validation, 'RandomForestClassifier')
-'''
 
 print_best()
