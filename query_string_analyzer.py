@@ -54,3 +54,43 @@ print(s("/google.com/"))
 print(s("/google.com/../../../***/"))
 print(s("/google.com/"))
 '''
+
+#script 1
+def get_querystring(url):
+    index = url.find('?')
+    if index != -1:
+        return url[index+1:]
+
+    #dont have querystring
+    return None
+
+print(get_querystring("/ex/modules/threadstop/threadstop.php?exbb[home_path]=http://192.168.202.96:8080/frznctvhi0i5??"))
+
+result = []
+lines = []
+i=0
+
+with open("dataset/myDataset/good.txt", "r") as input_file:
+    lines = input_file.readlines()
+
+for line in lines:
+    query_string = get_querystring(line)
+    if query_string != None:
+        result.append(query_string)
+        i += 1
+
+with open("out.txt", "w") as out:
+    for r in result:
+        out.write(r)
+
+#scrit 2
+file_lines = []
+
+with open("out.txt", "r") as input_file:
+    file_lines = input_file.readlines()
+
+result = list(set(file_lines))
+
+with open("out.txt", "w") as out:
+    for r in result:
+        out.write(r)
