@@ -1,6 +1,6 @@
 import math, random
 
-DATA_SIZE = 1000000
+DATA_SIZE = 100000
 
 
 def url_has_questionmark(url):
@@ -153,7 +153,7 @@ def calculate_dork_payload_size(attack_size, attack):
 
 
 #todo test eliminating an attack in training but not testing
-def find_attacks_size(datasize, dorks, payloads):
+def find_attacks_size(datasize):
     # percentage division: SQLi 30%, CommandInjection5%, LFI 15%, SSI 10%, XPATH 10%, XSS 30%
     attack_percentage = {"CI":0.05, "LFI":0.15, "SQLi": 0.3, "SSI":0.1, "X_PATH":0.1, "XSS":0.3}
     #attack_percentage = {"CI": 0.05, "LFI": 0.15, "SQLi": 0.3, "SSI": 0.1, "X_PATH": 0.1, "XSS": 0.3}
@@ -219,7 +219,7 @@ def create_bad_datas(needed_datas):
     return results
 
 def create_bad_queries(datasize, dorks, payloads):
-    needed_datas = find_attacks_size(datasize, dorks, payloads)
+    needed_datas = find_attacks_size(datasize)
     return create_bad_datas(needed_datas)
 
 
