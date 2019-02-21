@@ -1,6 +1,6 @@
 import math, random
 
-DATA_SIZE = 100000
+DATA_SIZE = 1200000
 
 
 def url_has_questionmark(url):
@@ -178,12 +178,17 @@ def get_datas(needed_datas):
         with open(f"data/dorks/{dork_file}.txt", "r") as dork_file:
             dorks_lines = dork_file.readlines()
             while len(dorks)< dork_size:
-                dorks.append(random.choice(dorks_lines))
+                while len(dorks) < dork_size:
+                    dorks.append(random.choice(dorks_lines))
+                dorks = list(set(dorks))
         with open(f"data/payloads/{attack_key}.txt", "r") as payload_file:
             payloads_lines = payload_file.readlines()
             while len(payloads) < payload_size:
-                payloads.append(random.choice(payloads_lines))
+                while len(payloads) < payload_size:
+                    payloads.append(random.choice(payloads_lines))
+                payloads = list(set(payloads))
         results[attack_key] = (dorks, payloads)
+
     return results
 
 def create_SQLi(size, datas):
@@ -192,7 +197,7 @@ def create_SQLi(size, datas):
         dorks = dorks.readlines()
         payloads = payloads.readlines()
     while len(results) < size:
-        print(f'MORE SQLi DATA CREATED: [{len(results)}]')
+        print(f'MORE SQLi DATA TO BE CREATED: [{size - len(results)}]')
         while len(results) < size:
             dork = random.choice(dorks)
             payload = random.choice(payloads)
@@ -218,7 +223,7 @@ def create_bad_datas(needed_datas):
     results = results[:DATA_SIZE]
     return results
 
-def create_bad_queries(datasize, dorks, payloads):
+def create_bad_queries(datasize):
     needed_datas = find_attacks_size(datasize)
     return create_bad_datas(needed_datas)
 
@@ -233,7 +238,7 @@ def create_dataset(datasize):
     dork_payloads = get_dork_payloads()
 
     good_queries = create_good_queries(datasize, url_base, good_payloads)
-    bad_queries = create_bad_queries(datasize, dork_urls_dictionary, dork_payloads)
+    bad_queries = create_bad_queries(datasize)
 
     print(f'\nGOOD CREATED: {len(good_queries)}')
     print(f'BAD CREATED: {len(bad_queries)}')
