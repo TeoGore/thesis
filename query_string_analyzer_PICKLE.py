@@ -43,7 +43,7 @@ def n_gram_tokenizer(query_string):
 
 def confidence_interval(model, x_validation, y_validation):
     # Const values: 1.64 (90%), 1.96 (95%), 2.33 (98%), 2.58 (99%)
-    const = 1.96 #want 95% confidence interval
+    const = 2.58 #want 95% confidence interval
     incorrect_prediction = 0 #todo esce sempre 0, correggere
     y_predicted = model.predict(x_validation)
     for y_pred, y in zip(y_predicted, y_validation):
@@ -193,11 +193,11 @@ X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, te
 #X_test = add_vulnerabilities(X_test, ["XSS"])
 #X_test  = X_train[:len(X_test)]
 
-X_test, y_test = update_vulnerabilities(X_test, y_test, ["SSI"])
-i=0
-for x, y in zip(X_test, y_test):
+#X_test, y_test = update_vulnerabilities(X_test, y_test, ["SSI"])
+#i=0
+#for x, y in zip(X_test, y_test):
     #print(f'[{i}] OUT:{y}\t{x}')
-    i+=1
+#    i+=1
 
 vectorizer = TfidfVectorizer(tokenizer=n_gram_tokenizer)    # term frequency-inverse document frequency
 vectorizer_fitted = vectorizer.fit(X_train)

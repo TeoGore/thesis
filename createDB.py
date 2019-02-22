@@ -1,6 +1,6 @@
 import math, random
 
-DATA_SIZE = 1200000
+DATA_SIZE = 300000
 
 
 def url_has_questionmark(url):
