@@ -1,23 +1,11 @@
-import os, math, random, pickle, urllib.parse
+import os, math, urllib.parse
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn import metrics
-
-'''
-Script for training the selected classifier (Logistic Regression)
-Sentiment analysis in query_string_analyzer.py
-'''
 
 N = 3       # Ngram value
 RANDOM_STATE = 123
-
-
-def save_pickle(variable, filename):
-    save_file = open(filename, 'wb')
-    pickle.dump(variable, save_file)
-    save_file.close()
 
 
 def load_file(filename):
@@ -104,8 +92,6 @@ X_validation, X_test, y_validation, y_test = train_test_split(X_test, y_test, te
 
 vectorizer = TfidfVectorizer(tokenizer=n_gram_tokenizer)    # term frequency-inverse document frequency
 vectorizer_fitted = vectorizer.fit(X_train)
-save_pickle(vectorizer_fitted, "classifiers/TFIDF_Vectorizer")
-
 
 X_train = vectorizer.transform(X_train)   # convert inputs to vectors
 X_validation = vectorizer.transform(X_validation)
@@ -115,141 +101,9 @@ X_test = vectorizer.transform(X_test)
 
 # -----------------------------MODEL SELECTION-----------------------------
 
-'''
 # LogisticRegression
-LR_1 = LogisticRegression(C=0.01, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_1.fit(X_train, y_train)
-LR_2 = LogisticRegression(C=0.02, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_2.fit(X_train, y_train)
-LR_3 = LogisticRegression(C=0.1, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_3.fit(X_train, y_train)
-LR_4 = LogisticRegression(C=0.2, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_4.fit(X_train, y_train)
-LR_5 = LogisticRegression(C=1.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_5.fit(X_train, y_train)
-LR_6 = LogisticRegression(C=2.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_6.fit(X_train, y_train)
-LR_7 = LogisticRegression(C=10.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_7.fit(X_train, y_train)
-LR_8 = LogisticRegression(C=20.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
-LR_8.fit(X_train, y_train)
-
-PERFORMANCE:
-----------------  Logistic Regression 1  ----------------
-Score: 				     98.86
-Accuracy: 			     98.86
-Confidence Interval: 	[0.01, 0.01]
-
-
-----------------  Logistic Regression 2  ----------------
-Score: 				     99.34
-Accuracy: 			     99.34
-Confidence Interval: 	[0.01, 0.01]
-
-
-----------------  Logistic Regression 3  ----------------
-Score: 				     99.86
-Accuracy: 			     99.86
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 4  ----------------
-Score: 				     99.93
-Accuracy: 			     99.93
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 5  ----------------
-Score: 				     99.98
-Accuracy: 			     99.98
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 6  ----------------
-Score: 				     99.99
-Accuracy: 			     99.99
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 7  ----------------
-Score: 				    100.00
-Accuracy: 			    100.00
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 8  ----------------
-Score: 				    100.00
-Accuracy: 			    100.00
-Confidence Interval: 	[0.00, 0.00]
-'''
-
-'''
-LR_1 = LogisticRegression(C=0.01, solver='saga', random_state=RANDOM_STATE)
-LR_1.fit(X_train, y_train)
-LR_2 = LogisticRegression(C=0.02, solver='saga', random_state=RANDOM_STATE)
-LR_2.fit(X_train, y_train)
-LR_3 = LogisticRegression(C=0.1, solver='saga', random_state=RANDOM_STATE)
-LR_3.fit(X_train, y_train)
-LR_4 = LogisticRegression(C=0.2, solver='saga', random_state=RANDOM_STATE)
-LR_4.fit(X_train, y_train)
-LR_5 = LogisticRegression(C=1.0, solver='saga', random_state=RANDOM_STATE)
-LR_5.fit(X_train, y_train)
-LR_6 = LogisticRegression(C=2.0, solver='saga', random_state=RANDOM_STATE)
-LR_6.fit(X_train, y_train)
-LR_7 = LogisticRegression(C=10.0, solver='saga', random_state=RANDOM_STATE)
-LR_7.fit(X_train, y_train)
-LR_8 = LogisticRegression(C=20.0, solver='saga', random_state=RANDOM_STATE)
-LR_8.fit(X_train, y_train)
-
-----------------  Logistic Regression 1  ----------------
-Score: 				     99.65
-Accuracy: 			     99.65
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 2  ----------------
-Score: 				     99.79
-Accuracy: 			     99.79
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 3  ----------------
-Score: 				     99.94
-Accuracy: 			     99.94
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 4  ----------------
-Score: 				     99.96
-Accuracy: 			     99.96
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 5  ----------------
-Score: 				     99.98
-Accuracy: 			     99.98
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 6  ----------------
-Score: 				     99.99
-Accuracy: 			     99.99
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 7  ----------------
-Score: 				     99.99
-Accuracy: 			     99.99
-Confidence Interval: 	[0.00, 0.00]
-
-
-----------------  Logistic Regression 8  ----------------
-Score: 				     99.99
-Accuracy: 			     99.99
-Confidence Interval: 	[0.00, 0.00]
-'''
-
-# LogisticRegression
+LR_0 = LogisticRegression(solver='lbfgs', random_state=RANDOM_STATE)
+LR_0.fit(X_train, y_train)
 LR_1 = LogisticRegression(C=0.001, solver='lbfgs', random_state=RANDOM_STATE)
 LR_1.fit(X_train, y_train)
 LR_2 = LogisticRegression(C=0.002, solver='lbfgs', random_state=RANDOM_STATE)
@@ -274,10 +128,13 @@ LR_11 = LogisticRegression(C=100.0, solver='lbfgs', random_state=RANDOM_STATE)
 LR_11.fit(X_train, y_train)
 LR_12 = LogisticRegression(C=200.0, solver='lbfgs', random_state=RANDOM_STATE)
 LR_12.fit(X_train, y_train)
+LR_13 = LogisticRegression(C=500.0, solver='lbfgs', random_state=RANDOM_STATE)
+LR_13.fit(X_train, y_train)
 
 
 
 # Metrics of all models (use Validation dataset):
+validate_model(LR_0, X_validation, y_validation, 'Logistic Regression 0')
 validate_model(LR_1, X_validation, y_validation, 'Logistic Regression 1')
 validate_model(LR_2, X_validation, y_validation, 'Logistic Regression 2')
 validate_model(LR_3, X_validation, y_validation, 'Logistic Regression 3')
@@ -290,7 +147,32 @@ validate_model(LR_9, X_validation, y_validation, 'Logistic Regression 9')
 validate_model(LR_10, X_validation, y_validation, 'Logistic Regression 10')
 validate_model(LR_11, X_validation, y_validation, 'Logistic Regression 11')
 validate_model(LR_12, X_validation, y_validation, 'Logistic Regression 12')
+validate_model(LR_13, X_validation, y_validation, 'Logistic Regression 13')
 
 #TESTING
-validate_model(LR_5, X_test, y_test, 'BEST CLASSIFIER - LOGISTIC REGRESSION')
-#save_pickle(LR_4, 'pickle_tmp/LogisticRegression_Classifier.pickle')
+#validate_model(LR_5, X_test, y_test, 'BEST CLASSIFIER - LOGISTIC REGRESSION')
+#save_pickle(LR_5, 'pickle_tmp/LogisticRegression_Classifier.pickle')
+
+
+
+import matplotlib.pyplot as plt
+from matplotlib import style
+
+style.use("ggplot")
+
+#default is 1.0
+C = [0.001, 0.002, 0.01, 0.02, 0.1, 0.2, 1.0, 2.0, 10.0, 20.0, 100.0, 200.0]
+Accuracy = [98.83, 99.12, 99.65, 99.77, 99.93, 99.96, 99.98, 99.99, 99.99, 99.99, 100.0, 100.0]
+
+C_new = [1,2,3,4,5,6,7,8,9,10,11, 12]
+
+C_string = ['0.001', '0.002', '0.01', '0.02', '0.1', '0.2', '1.0', '2.0', '10.0', '20.0', '100.0', '200.0']
+plt.xticks(C_new, C_string, rotation=45)
+
+
+plt.plot(C_new, Accuracy)
+plt.xlabel("C parameter")
+plt.ylabel("Accuracy")
+plt.title("C parameter - Accuracy")
+plt.axis([0, 14, 98.5, 100.5])
+plt.show()

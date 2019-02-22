@@ -3,7 +3,6 @@ import os, math, random, pickle, urllib.parse
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn import metrics
 
 '''
 Script for training the selected classifier (Logistic Regression)
