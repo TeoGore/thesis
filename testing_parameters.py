@@ -199,6 +199,23 @@ LR_7.fit(X_train, y_train)
 LogisticRegressionModel = LogisticRegression(class_weight={1: 2 *len(good_queries)/len(bad_queries), 0: 1.0}) # class_weight='balanced')
 '''
 
+LR_1 = LogisticRegression(C=0.01, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_1.fit(X_train, y_train)
+LR_2 = LogisticRegression(C=0.02, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_2.fit(X_train, y_train)
+LR_3 = LogisticRegression(C=0.1, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_3.fit(X_train, y_train)
+LR_4 = LogisticRegression(C=0.2, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_4.fit(X_train, y_train)
+LR_5 = LogisticRegression(C=1.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_5.fit(X_train, y_train)
+LR_6 = LogisticRegression(C=2.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_6.fit(X_train, y_train)
+LR_7 = LogisticRegression(C=10.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_7.fit(X_train, y_train)
+LR_8 = LogisticRegression(C=20.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_8.fit(X_train, y_train)
+
 
 # Metrics of all models (use Validation dataset):
 validate_model(LR_1, X_validation, y_validation, 'Logistic Regression 1')
@@ -208,6 +225,7 @@ validate_model(LR_4, X_validation, y_validation, 'Logistic Regression 4')
 validate_model(LR_5, X_validation, y_validation, 'Logistic Regression 5')
 validate_model(LR_6, X_validation, y_validation, 'Logistic Regression 6')
 validate_model(LR_7, X_validation, y_validation, 'Logistic Regression 7')
+validate_model(LR_8, X_validation, y_validation, 'Logistic Regression 8')
 
 
 print_best()
