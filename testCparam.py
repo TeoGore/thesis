@@ -31,8 +31,8 @@ def n_gram_tokenizer(query_string):
 
 def confidence_interval(model, x_validation, y_validation):
     # Const values: 1.64 (90%), 1.96 (95%), 2.33 (98%), 2.58 (99%)
-    const = 2.58 #want 95% confidence interval
-    incorrect_prediction = 0 #todo esce sempre 0, correggere
+    const = 2.58 #want 99% confidence interval
+    incorrect_prediction = 0
     y_predicted = model.predict(x_validation)
     for y_pred, y in zip(y_predicted, y_validation):
         if y_pred != y:
@@ -101,9 +101,10 @@ X_test = vectorizer.transform(X_test)
 
 # -----------------------------MODEL SELECTION-----------------------------
 
+
+
+
 # LogisticRegression
-LR_0 = LogisticRegression(solver='lbfgs', random_state=RANDOM_STATE)
-LR_0.fit(X_train, y_train)
 LR_1 = LogisticRegression(C=0.001, solver='lbfgs', random_state=RANDOM_STATE)
 LR_1.fit(X_train, y_train)
 LR_2 = LogisticRegression(C=0.002, solver='lbfgs', random_state=RANDOM_STATE)
@@ -124,17 +125,11 @@ LR_9 = LogisticRegression(C=10.0, solver='lbfgs', random_state=RANDOM_STATE)
 LR_9.fit(X_train, y_train)
 LR_10 = LogisticRegression(C=20.0, solver='lbfgs', random_state=RANDOM_STATE)
 LR_10.fit(X_train, y_train)
-LR_11 = LogisticRegression(C=100.0, solver='lbfgs', random_state=RANDOM_STATE)
-LR_11.fit(X_train, y_train)
-LR_12 = LogisticRegression(C=200.0, solver='lbfgs', random_state=RANDOM_STATE)
-LR_12.fit(X_train, y_train)
-LR_13 = LogisticRegression(C=500.0, solver='lbfgs', random_state=RANDOM_STATE)
-LR_13.fit(X_train, y_train)
+
 
 
 
 # Metrics of all models (use Validation dataset):
-validate_model(LR_0, X_validation, y_validation, 'Logistic Regression 0')
 validate_model(LR_1, X_validation, y_validation, 'Logistic Regression 1')
 validate_model(LR_2, X_validation, y_validation, 'Logistic Regression 2')
 validate_model(LR_3, X_validation, y_validation, 'Logistic Regression 3')
@@ -145,9 +140,45 @@ validate_model(LR_7, X_validation, y_validation, 'Logistic Regression 7')
 validate_model(LR_8, X_validation, y_validation, 'Logistic Regression 8')
 validate_model(LR_9, X_validation, y_validation, 'Logistic Regression 9')
 validate_model(LR_10, X_validation, y_validation, 'Logistic Regression 10')
-validate_model(LR_11, X_validation, y_validation, 'Logistic Regression 11')
-validate_model(LR_12, X_validation, y_validation, 'Logistic Regression 12')
-validate_model(LR_13, X_validation, y_validation, 'Logistic Regression 13')
+
+
+
+
+'''
+LR_1 = LogisticRegression(C=0.001, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_1.fit(X_train, y_train)
+LR_2 = LogisticRegression(C=0.002, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_2.fit(X_train, y_train)
+LR_3 = LogisticRegression(C=0.01, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_3.fit(X_train, y_train)
+LR_4 = LogisticRegression(C=0.02, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_4.fit(X_train, y_train)
+LR_5 = LogisticRegression(C=0.1, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_5.fit(X_train, y_train)
+LR_6 = LogisticRegression(C=0.2, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_6.fit(X_train, y_train)
+LR_7 = LogisticRegression(C=1.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_7.fit(X_train, y_train)
+LR_8 = LogisticRegression(C=2.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_8.fit(X_train, y_train)
+LR_9 = LogisticRegression(C=10.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_9.fit(X_train, y_train)
+LR_10 = LogisticRegression(C=20.0, solver='liblinear', penalty='l1', random_state=RANDOM_STATE)
+LR_10.fit(X_train, y_train)
+
+validate_model(LR_1, X_validation, y_validation, 'Logistic Regression 1')
+validate_model(LR_2, X_validation, y_validation, 'Logistic Regression 2')
+validate_model(LR_3, X_validation, y_validation, 'Logistic Regression 3')
+validate_model(LR_4, X_validation, y_validation, 'Logistic Regression 4')
+validate_model(LR_5, X_validation, y_validation, 'Logistic Regression 5')
+validate_model(LR_6, X_validation, y_validation, 'Logistic Regression 6')
+validate_model(LR_7, X_validation, y_validation, 'Logistic Regression 7')
+validate_model(LR_8, X_validation, y_validation, 'Logistic Regression 8')
+validate_model(LR_9, X_validation, y_validation, 'Logistic Regression 9')
+validate_model(LR_10, X_validation, y_validation, 'Logistic Regression 10')
+'''
+
+
 
 #TESTING
 #validate_model(LR_5, X_test, y_test, 'BEST CLASSIFIER - LOGISTIC REGRESSION')
@@ -161,12 +192,13 @@ from matplotlib import style
 style.use("ggplot")
 
 #default is 1.0
-C = [0.001, 0.002, 0.01, 0.02, 0.1, 0.2, 1.0, 2.0, 10.0, 20.0, 100.0, 200.0]
-Accuracy = [98.83, 99.12, 99.65, 99.77, 99.93, 99.96, 99.98, 99.99, 99.99, 99.99, 100.0, 100.0]
+C = [0.001, 0.002, 0.01, 0.02, 0.1, 0.2, 1.0, 2.0, 10.0, 20.0]
+Accuracy = [98.83, 99.12, 99.65, 99.77, 99.93, 99.96, 99.98, 99.99] #1.2M   datset
 
-C_new = [1,2,3,4,5,6,7,8,9,10,11, 12]
+C_new = [1,2,3,4,5,6,7,8,9,10]
+C_string = ['0.001', '0.002', '0.01', '0.02', '0.1', '0.2', '1.0', '2.0', '10.0', '20.0']
 
-C_string = ['0.001', '0.002', '0.01', '0.02', '0.1', '0.2', '1.0', '2.0', '10.0', '20.0', '100.0', '200.0']
+Accuracy = [85.38, 92.26, 98.32, 98.97, 99.42, 99.49, 99.74, 99.79, 99.81, 99.84] #dataset using all payloads once
 plt.xticks(C_new, C_string, rotation=45)
 
 
@@ -174,5 +206,5 @@ plt.plot(C_new, Accuracy)
 plt.xlabel("C parameter")
 plt.ylabel("Accuracy")
 plt.title("C parameter - Accuracy")
-plt.axis([0, 14, 98.5, 100.5])
+plt.axis([min(C_new), max(C_new), min(Accuracy), max(Accuracy)])
 plt.show()
