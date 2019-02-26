@@ -10,7 +10,7 @@ Sentiment analysis in query_string_analyzer.py
 '''
 
 N = 3       # Ngram value
-RANDOM_STATE = 123
+RANDOM_STATE = 17
 
 
 def save_pickle(variable, filename):
@@ -211,7 +211,7 @@ X_test = vectorizer.transform(X_test)
 
 # -----------------------------MODEL SELECTION-----------------------------
 # LogisticRegression
-LogisticRegression_Classifier = LogisticRegression(solver='liblinear', penalty='l1', random_state=RANDOM_STATE, max_iter=200) # put solver to silence the warning
+LogisticRegression_Classifier = LogisticRegression(solver='lbfgs', random_state=RANDOM_STATE) # put solver to silence the warning
 LogisticRegression_Classifier.fit(X_train, y_train)   # train the model
 save_pickle(LogisticRegression_Classifier, 'pickle_tmp/LogisticRegression_Classifier.pickle')
 

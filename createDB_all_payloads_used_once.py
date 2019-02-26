@@ -1,8 +1,5 @@
 import random
 
-good_results = []
-
-
 def create_bad_using_all_payloads_only_once():
     results = []
 
@@ -56,7 +53,6 @@ def create_bad_using_all_payloads_only_once():
 
         return results
 
-
 def ALL_DORKS_AND_PAYLOADS():
     dorks_results = []
     payloads_results = []
@@ -106,11 +102,9 @@ def url_has_questionmark(url):
         return True
     return False
 
-
 def strip_payload(url):
     index = url.rfind("=")
     return url[:index+1]
-
 
 def strip_payloads(filepath):
     results = []
